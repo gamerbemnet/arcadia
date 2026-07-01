@@ -762,7 +762,7 @@ app.post('/api/flux/buy', requireAuth, (req, res) => {
   res.json({ success: true, flux: user.flux });
 });
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.status(200).send('ok'));
 
 process.on('uncaughtException', (err) => { console.error('Uncaught:', err.message); });
 process.on('unhandledRejection', (err) => { console.error('Unhandled:', err); });
