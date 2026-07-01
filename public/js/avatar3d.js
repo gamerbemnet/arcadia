@@ -275,158 +275,96 @@
   function buildAvatarGeometry() {
     const parts = [];
 
-    // Head (slightly oversized)
-    const head = generateBox(1.1, 1.1, 1.1);
-    const headT = mat4Translate(0, 1.55, 0);
-    parts.push({ geo: head, transform: headT, color: currentBodyColor, isHead: true });
+    // Polytopia-style: big square head, stubby body
+    const head = generateBox(1.4, 1.2, 1.3);
+    parts.push({ geo: head, transform: mat4Translate(0, 1.7, 0), color: currentBodyColor });
 
-    // Torso
-    const torso = generateBox(1.0, 1.1, 0.65);
-    const torsoT = mat4Translate(0, 0.5, 0);
-    parts.push({ geo: torso, transform: torsoT, color: currentBodyColor });
+    // Torso (short and wide)
+    const torso = generateBox(1.1, 0.9, 0.7);
+    parts.push({ geo: torso, transform: mat4Translate(0, 0.65, 0), color: currentBodyColor });
 
-    // Left arm
-    const laGeo = generateBox(0.4, 1.0, 0.4);
-    const laT = mat4Translate(-0.7, 0.55, 0);
-    parts.push({ geo: laGeo, transform: laT, color: currentBodyColor });
+    // Arms (short stubs)
+    parts.push({ geo: generateBox(0.35, 0.7, 0.35), transform: mat4Translate(-0.73, 0.7, 0), color: currentBodyColor });
+    parts.push({ geo: generateBox(0.35, 0.7, 0.35), transform: mat4Translate(0.73, 0.7, 0), color: currentBodyColor });
 
-    // Right arm
-    const raGeo = generateBox(0.4, 1.0, 0.4);
-    const raT = mat4Translate(0.7, 0.55, 0);
-    parts.push({ geo: raGeo, transform: raT, color: currentBodyColor });
+    // Legs (short blocks)
+    parts.push({ geo: generateBox(0.4, 0.6, 0.45), transform: mat4Translate(-0.27, -0.05, 0), color: currentBodyColor });
+    parts.push({ geo: generateBox(0.4, 0.6, 0.45), transform: mat4Translate(0.27, -0.05, 0), color: currentBodyColor });
 
-    // Left leg
-    const llGeo = generateBox(0.45, 0.85, 0.5);
-    const llT = mat4Translate(-0.25, -0.55, 0);
-    parts.push({ geo: llGeo, transform: llT, color: currentBodyColor });
+    // Face — front surface at z = 0.65
+    const fz = 0.67;
 
-    // Right leg
-    const rlGeo = generateBox(0.45, 0.85, 0.5);
-    const rlT = mat4Translate(0.25, -0.55, 0);
-    parts.push({ geo: rlGeo, transform: rlT, color: currentBodyColor });
+    // Eyes (big white squares, Polytopia style)
+    parts.push({ geo: generateBox(0.28, 0.28, 0.05), transform: mat4Translate(-0.25, 1.8, fz), color: [1,1,1], flat: true });
+    parts.push({ geo: generateBox(0.28, 0.28, 0.05), transform: mat4Translate(0.25, 1.8, fz), color: [1,1,1], flat: true });
 
-    // Face features (on head front)
-    // Eyes (pushed forward to avoid z-fighting with head surface at z=0.55)
-    const eyeL = generateBox(0.18, 0.18, 0.06);
-    const eyeLT = mat4Translate(-0.22, 1.65, 0.59);
-    parts.push({ geo: eyeL, transform: eyeLT, color: [1,1,1], flat: true });
-
-    const eyeR = generateBox(0.18, 0.18, 0.06);
-    const eyeRT = mat4Translate(0.22, 1.65, 0.59);
-    parts.push({ geo: eyeR, transform: eyeRT, color: [1,1,1], flat: true });
-
-    // Pupils
-    const pupL = generateBox(0.1, 0.1, 0.03);
-    const pupLT = mat4Translate(-0.22, 1.65, 0.63);
-    parts.push({ geo: pupL, transform: pupLT, color: [0.12,0.12,0.12], flat: true });
-
-    const pupR = generateBox(0.1, 0.1, 0.03);
-    const pupRT = mat4Translate(0.22, 1.65, 0.63);
-    parts.push({ geo: pupR, transform: pupRT, color: [0.12,0.12,0.12], flat: true });
+    // Pupils (small black dots)
+    parts.push({ geo: generateBox(0.12, 0.12, 0.03), transform: mat4Translate(-0.25, 1.78, fz + 0.03), color: [0.1,0.1,0.1], flat: true });
+    parts.push({ geo: generateBox(0.12, 0.12, 0.03), transform: mat4Translate(0.25, 1.78, fz + 0.03), color: [0.1,0.1,0.1], flat: true });
 
     // Mouth
-    if (currentFace === 'smile' || currentFace === 'wink') {
-      const mouth = generateBox(0.3, 0.06, 0.03);
-      const mouthT = mat4Translate(0, 1.43, 0.59);
-      parts.push({ geo: mouth, transform: mouthT, color: [0.12,0.12,0.12], flat: true });
+    if (currentFace === 'smile') {
+      parts.push({ geo: generateBox(0.35, 0.08, 0.04), transform: mat4Translate(0, 1.55, fz), color: [0.1,0.1,0.1], flat: true });
     } else if (currentFace === 'cool') {
       // Sunglasses
-      const glassL = generateBox(0.22, 0.15, 0.07);
-      const glassLT = mat4Translate(-0.22, 1.65, 0.59);
-      parts.push({ geo: glassL, transform: glassLT, color: [0.1,0.1,0.1], flat: true });
-      const glassR = generateBox(0.22, 0.15, 0.07);
-      const glassRT = mat4Translate(0.22, 1.65, 0.59);
-      parts.push({ geo: glassR, transform: glassRT, color: [0.1,0.1,0.1], flat: true });
-      const bridge = generateBox(0.1, 0.04, 0.07);
-      const bridgeT = mat4Translate(0, 1.68, 0.59);
-      parts.push({ geo: bridge, transform: bridgeT, color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.32, 0.18, 0.06), transform: mat4Translate(-0.25, 1.8, fz), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.32, 0.18, 0.06), transform: mat4Translate(0.25, 1.8, fz), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.12, 0.06, 0.06), transform: mat4Translate(0, 1.84, fz), color: [0.1,0.1,0.1], flat: true });
     } else if (currentFace === 'laugh') {
-      const mouth = generateBox(0.25, 0.12, 0.03);
-      const mouthT = mat4Translate(0, 1.42, 0.59);
-      parts.push({ geo: mouth, transform: mouthT, color: [0.8,0.2,0.2], flat: true });
+      parts.push({ geo: generateBox(0.3, 0.15, 0.04), transform: mat4Translate(0, 1.52, fz), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.2, 0.06, 0.04), transform: mat4Translate(0, 1.58, fz), color: [1,1,1], flat: true });
     } else if (currentFace === 'angry') {
-      // Angry eyebrows
-      const browL = generateBox(0.2, 0.05, 0.04);
-      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(-0.22, 1.78, 0.60), mat4RotateZ(0.3)), color: [0.12,0.12,0.12], flat: true });
-      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(0.22, 1.78, 0.60), mat4RotateZ(-0.3)), color: [0.12,0.12,0.12], flat: true });
-      const mouth = generateBox(0.18, 0.04, 0.03);
-      parts.push({ geo: mouth, transform: mat4Translate(0, 1.42, 0.59), color: [0.12,0.12,0.12], flat: true });
+      parts.push({ geo: generateBox(0.25, 0.06, 0.04), transform: mat4Mul(mat4Translate(-0.25, 1.98, fz), mat4RotateZ(0.35)), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.25, 0.06, 0.04), transform: mat4Mul(mat4Translate(0.25, 1.98, fz), mat4RotateZ(-0.35)), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.2, 0.05, 0.04), transform: mat4Translate(0, 1.52, fz), color: [0.1,0.1,0.1], flat: true });
     } else if (currentFace === 'star') {
-      const starC = generateBox(0.2, 0.2, 0.03);
-      const starT = mat4Translate(0, 1.52, 0.60);
-      parts.push({ geo: starC, transform: starT, color: [1,0.85,0.24], flat: true });
-      const starH = generateBox(0.35, 0.1, 0.03);
-      parts.push({ geo: starH, transform: starT, color: [1,0.85,0.24], flat: true });
-      const starV = generateBox(0.1, 0.35, 0.03);
-      parts.push({ geo: starV, transform: starT, color: [1,0.85,0.24], flat: true });
+      parts.push({ geo: generateBox(0.25, 0.25, 0.04), transform: mat4Translate(0, 1.72, fz), color: [1,0.85,0.2], flat: true });
+      parts.push({ geo: generateBox(0.4, 0.12, 0.04), transform: mat4Translate(0, 1.72, fz), color: [1,0.85,0.2], flat: true });
+      parts.push({ geo: generateBox(0.12, 0.4, 0.04), transform: mat4Translate(0, 1.72, fz), color: [1,0.85,0.2], flat: true });
+    } else if (currentFace === 'wink') {
+      parts.push({ geo: generateBox(0.28, 0.06, 0.04), transform: mat4Translate(-0.25, 1.8, fz), color: [0.1,0.1,0.1], flat: true });
+      parts.push({ geo: generateBox(0.35, 0.08, 0.04), transform: mat4Translate(0, 1.55, fz), color: [0.1,0.1,0.1], flat: true });
     }
 
-    // Hat
+    // Hat (on top of head, y=2.3+)
     if (currentHat === 'crown') {
-      const base = generateBox(0.9, 0.18, 0.9);
-      parts.push({ geo: base, transform: mat4Translate(0, 2.25, 0), color: [1,0.85,0.24] });
-      for (let i = -1; i <= 1; i++) {
-        const spike = generateBox(0.18, 0.25, 0.18);
-        parts.push({ geo: spike, transform: mat4Translate(i * 0.3, 2.45, 0), color: [1,0.85,0.24] });
-      }
+      parts.push({ geo: generateBox(1.0, 0.2, 1.0), transform: mat4Translate(0, 2.45, 0), color: [1,0.85,0.2] });
+      parts.push({ geo: generateBox(0.2, 0.3, 0.2), transform: mat4Translate(-0.3, 2.7, 0), color: [1,0.85,0.2] });
+      parts.push({ geo: generateBox(0.2, 0.3, 0.2), transform: mat4Translate(0, 2.7, 0), color: [1,0.85,0.2] });
+      parts.push({ geo: generateBox(0.2, 0.3, 0.2), transform: mat4Translate(0.3, 2.7, 0), color: [1,0.85,0.2] });
     } else if (currentHat === 'cap') {
-      const brim = generateBox(1.1, 0.1, 0.8);
-      parts.push({ geo: brim, transform: mat4Translate(0, 2.15, 0.1), color: [0.9,0.25,0.2] });
-      const top = generateBox(0.85, 0.25, 0.85);
-      parts.push({ geo: top, transform: mat4Translate(0, 2.25, 0), color: [0.9,0.25,0.2] });
+      parts.push({ geo: generateBox(1.2, 0.1, 0.9), transform: mat4Translate(0, 2.35, 0.15), color: [0.9,0.25,0.2] });
+      parts.push({ geo: generateBox(1.0, 0.3, 1.0), transform: mat4Translate(0, 2.5, 0), color: [0.9,0.25,0.2] });
     } else if (currentHat === 'tophat') {
-      const brim = generateBox(1.1, 0.12, 1.1);
-      parts.push({ geo: brim, transform: mat4Translate(0, 2.15, 0), color: [0.15,0.15,0.15] });
-      const tall = generateBox(0.7, 0.6, 0.7);
-      parts.push({ geo: tall, transform: mat4Translate(0, 2.5, 0), color: [0.15,0.15,0.15] });
-      const band = generateBox(0.72, 0.08, 0.72);
-      parts.push({ geo: band, transform: mat4Translate(0, 2.25, 0), color: [0.9,0.25,0.2] });
+      parts.push({ geo: generateBox(1.2, 0.12, 1.2), transform: mat4Translate(0, 2.35, 0), color: [0.12,0.12,0.12] });
+      parts.push({ geo: generateBox(0.8, 0.7, 0.8), transform: mat4Translate(0, 2.75, 0), color: [0.12,0.12,0.12] });
+      parts.push({ geo: generateBox(0.82, 0.1, 0.82), transform: mat4Translate(0, 2.45, 0), color: [0.9,0.25,0.2] });
     } else if (currentHat === 'headphones') {
-      const band = generateBox(1.1, 0.1, 0.15);
-      parts.push({ geo: band, transform: mat4Translate(0, 2.2, 0), color: [0.15,0.15,0.15] });
-      const earL = generateBox(0.25, 0.3, 0.25);
-      parts.push({ geo: earL, transform: mat4Translate(-0.55, 1.9, 0), color: [0.15,0.15,0.15] });
-      const earR = generateBox(0.25, 0.3, 0.25);
-      parts.push({ geo: earR, transform: mat4Translate(0.55, 1.9, 0), color: [0.15,0.15,0.15] });
-      const padL = generateBox(0.15, 0.18, 0.15);
-      parts.push({ geo: padL, transform: mat4Translate(-0.55, 1.9, 0.13), color: [0.1,0.55,0.95] });
-      const padR = generateBox(0.15, 0.18, 0.15);
-      parts.push({ geo: padR, transform: mat4Translate(0.55, 1.9, 0.13), color: [0.1,0.55,0.95] });
+      parts.push({ geo: generateBox(1.3, 0.12, 0.15), transform: mat4Translate(0, 2.4, 0), color: [0.12,0.12,0.12] });
+      parts.push({ geo: generateBox(0.28, 0.35, 0.28), transform: mat4Translate(-0.65, 2.05, 0), color: [0.12,0.12,0.12] });
+      parts.push({ geo: generateBox(0.28, 0.35, 0.28), transform: mat4Translate(0.65, 2.05, 0), color: [0.12,0.12,0.12] });
+      parts.push({ geo: generateBox(0.18, 0.22, 0.18), transform: mat4Translate(-0.65, 2.05, 0.15), color: [0.1,0.55,0.95] });
+      parts.push({ geo: generateBox(0.18, 0.22, 0.18), transform: mat4Translate(0.65, 2.05, 0.15), color: [0.1,0.55,0.95] });
     } else if (currentHat === 'halo') {
-      const halo = genTorus(0.5, 0.05, 24, 8);
-      parts.push({ geo: halo, transform: mat4Translate(0, 2.3, 0), color: [1,0.85,0.24], flat: true });
+      const halo = genTorus(0.6, 0.06, 24, 8);
+      parts.push({ geo: halo, transform: mat4Translate(0, 2.55, 0), color: [1,0.85,0.2], flat: true });
     }
 
     // Accessories
     if (currentAccessory === 'sword') {
-      const blade = generateBox(0.08, 0.9, 0.04);
-      parts.push({ geo: blade, transform: mat4Translate(0.85, 0.3, 0), color: [0.75,0.75,0.75] });
-      const guard = generateBox(0.25, 0.06, 0.06);
-      parts.push({ geo: guard, transform: mat4Translate(0.85, -0.15, 0), color: [0.75,0.75,0.75] });
-      const handle = generateBox(0.08, 0.2, 0.08);
-      parts.push({ geo: handle, transform: mat4Translate(0.85, -0.3, 0), color: [0.55,0.3,0.07] });
-      const gem = generateBox(0.06, 0.06, 0.06);
-      parts.push({ geo: gem, transform: mat4Translate(0.85, -0.38, 0), color: [1,0.85,0.24] });
+      parts.push({ geo: generateBox(0.1, 1.0, 0.05), transform: mat4Translate(0.9, 0.5, 0), color: [0.75,0.75,0.75] });
+      parts.push({ geo: generateBox(0.28, 0.08, 0.08), transform: mat4Translate(0.9, 0.0, 0), color: [0.75,0.75,0.75] });
+      parts.push({ geo: generateBox(0.1, 0.25, 0.1), transform: mat4Translate(0.9, -0.15, 0), color: [0.55,0.3,0.07] });
     } else if (currentAccessory === 'shield') {
-      const body = generateBox(0.6, 0.7, 0.08);
-      parts.push({ geo: body, transform: mat4Translate(-0.85, 0.4, 0), color: [0.13,0.59,0.95] });
-      const emblem = generateBox(0.2, 0.2, 0.04);
-      parts.push({ geo: emblem, transform: mat4Translate(-0.85, 0.4, 0.06), color: [1,0.85,0.24] });
+      parts.push({ geo: generateBox(0.7, 0.8, 0.1), transform: mat4Translate(-0.9, 0.5, 0), color: [0.13,0.59,0.95] });
+      parts.push({ geo: generateBox(0.25, 0.25, 0.05), transform: mat4Translate(-0.9, 0.5, 0.07), color: [1,0.85,0.2] });
     } else if (currentAccessory === 'wings') {
-      const wingL = generateBox(0.6, 0.4, 0.08);
-      parts.push({ geo: wingL, transform: mat4Translate(-0.6, 0.85, -0.35), color: [0.95,0.95,0.95] });
-      const wingR = generateBox(0.6, 0.4, 0.08);
-      parts.push({ geo: wingR, transform: mat4Translate(0.6, 0.85, -0.35), color: [0.95,0.95,0.95] });
+      parts.push({ geo: generateBox(0.7, 0.45, 0.1), transform: mat4Translate(-0.65, 1.0, -0.4), color: [0.95,0.95,0.95] });
+      parts.push({ geo: generateBox(0.7, 0.45, 0.1), transform: mat4Translate(0.65, 1.0, -0.4), color: [0.95,0.95,0.95] });
     } else if (currentAccessory === 'cape') {
-      const cape = generateBox(0.85, 1.2, 0.06);
-      parts.push({ geo: cape, transform: mat4Translate(0, 0.15, -0.38), color: [0.61,0.35,0.71] });
+      parts.push({ geo: generateBox(0.9, 1.3, 0.08), transform: mat4Translate(0, 0.3, -0.42), color: [0.61,0.35,0.71] });
     } else if (currentAccessory === 'backpack') {
-      const pack = generateBox(0.5, 0.55, 0.3);
-      parts.push({ geo: pack, transform: mat4Translate(0, 0.55, -0.48), color: [0.9,0.49,0.14] });
-      const strap = generateBox(0.08, 0.5, 0.06);
-      parts.push({ geo: strap, transform: mat4Translate(-0.2, 0.55, -0.28), color: [0.83,0.33,0] });
-      const strap2 = generateBox(0.08, 0.5, 0.06);
-      parts.push({ geo: strap2, transform: mat4Translate(0.2, 0.55, -0.28), color: [0.83,0.33,0] });
+      parts.push({ geo: generateBox(0.55, 0.6, 0.35), transform: mat4Translate(0, 0.65, -0.52), color: [0.9,0.49,0.14] });
     }
 
     return parts;
@@ -510,7 +448,7 @@
     gl.cullFace(gl.BACK);
 
     projMat = mat4Perspective(Math.PI / 5, canvas.width / canvas.height, 0.1, 100);
-    viewMat = mat4LookAt([0, 1.2, 5.5], [0, 0.6, 0], [0, 1, 0]);
+    viewMat = mat4LookAt([0, 1.4, 6], [0, 0.8, 0], [0, 1, 0]);
 
     const parts = buildAvatarGeometry();
 
