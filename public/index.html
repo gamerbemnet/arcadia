@@ -22,6 +22,7 @@
     <div class="sidebar-item" data-section="sec-creations" onclick="scrollToSection('sec-creations')">🎮<span class="tooltip">My Creations</span></div>
     <div class="sidebar-item" data-section="sec-friends" onclick="scrollToSection('sec-friends')">👥<span class="tooltip">Friends</span></div>
     <div class="sidebar-item" data-section="sec-shop" onclick="scrollToSection('sec-shop')">🛒<span class="tooltip">Shop</span></div>
+    <div class="sidebar-item" data-section="sec-assets" onclick="scrollToSection('sec-assets')">📦<span class="tooltip">Assets</span></div>
     <div class="sidebar-item" data-section="sec-avatar" onclick="scrollToSection('sec-avatar')">👤<span class="tooltip">Avatar</span></div>
   </div>
   <div class="sidebar-bottom">
@@ -209,13 +210,36 @@
     </div>
   </section>
 
+  <!-- Assets -->
+  <section id="sec-assets">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>📦 Assets</h2>
+        <button class="btn btn-primary btn-sm" onclick="openAssetUpload()">⬆ Upload Asset (10⚡)</button>
+      </div>
+      <div class="tab-bar" id="asset-filter-tabs">
+        <button class="tab-btn active" onclick="browseAssets('all',this)">All</button>
+        <button class="tab-btn" onclick="browseAssets('avatar',this)">Avatars</button>
+        <button class="tab-btn" onclick="browseAssets('model',this)">Models</button>
+        <button class="tab-btn" onclick="browseAssets('texture',this)">Textures</button>
+        <button class="tab-btn" onclick="browseAssets('script',this)">Scripts</button>
+      </div>
+      <div class="search-row" style="margin-bottom:14px">
+        <input type="text" id="asset-search" placeholder="Search assets..." oninput="searchAssets()">
+      </div>
+      <div class="games-row" id="asset-grid"></div>
+      <p id="no-assets-msg" style="display:none;color:#999;text-align:center;padding:30px">No assets found. Upload the first one!</p>
+    </div>
+  </section>
+
   <!-- Avatar -->
   <section id="sec-avatar">
     <div class="content-section">
       <div class="section-header"><h2>👤 Avatar Editor</h2></div>
       <div class="avatar-editor-grid">
         <div class="avatar-preview-card">
-          <canvas id="avatar-preview" width="280" height="380"></canvas>
+          <canvas id="avatar-3d" style="width:100%;height:380px;border-radius:10px;cursor:grab"></canvas>
+          <canvas id="avatar-preview" width="280" height="380" style="display:none"></canvas>
           <button class="btn btn-primary btn-full" onclick="saveAvatar()" style="margin-top:12px">Save Avatar</button>
         </div>
         <div class="avatar-options">
@@ -282,6 +306,38 @@
   </div>
 </div>
 
+<!-- Asset Upload Modal -->
+<div class="modal-overlay" id="asset-upload-modal">
+  <div class="modal">
+    <h3>Upload Asset</h3>
+    <div class="form-group">
+      <label>Asset Name</label>
+      <input type="text" id="asset-name" placeholder="My Cool Asset" onkeydown="if(event.key==='Enter')uploadAsset()">
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="asset-type">
+        <option value="avatar">Avatar</option>
+        <option value="model">Model</option>
+        <option value="texture">Texture</option>
+        <option value="mesh">Mesh</option>
+        <option value="audio">Audio</option>
+        <option value="script">Script</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>File</label>
+      <input type="file" id="asset-file" class="form-file">
+      <p style="font-size:11px;color:#999;margin-top:4px">Cost: 10 Flux</p>
+    </div>
+    <div class="error-msg" id="asset-upload-error"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="document.getElementById('asset-upload-modal').classList.remove('active')">Cancel</button>
+      <button class="btn btn-primary" onclick="uploadAsset()">Upload</button>
+    </div>
+  </div>
+</div>
+
 <!-- Chat Panel -->
 <div class="chat-panel" id="chat-panel">
   <div class="chat-header">
@@ -302,6 +358,7 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="/js/avatar3d.js"></script>
 <script src="/js/app.js"></script>
 <div id="ad-container" style="display:flex;justify-content:center;margin:16px 0">
   <script>

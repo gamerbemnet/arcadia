@@ -515,237 +515,9 @@ function setAvatarAccessory(id) {
 }
 
 function renderAvatarPreview() {
-  const canvas = document.getElementById('avatar-preview');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const cx = 140, cy = 180;
-  ctx.clearRect(0, 0, 280, 380);
-
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
-  ctx.beginPath(); ctx.ellipse(cx, 350, 45, 10, 0, 0, Math.PI * 2); ctx.fill();
-
-  ctx.fillStyle = avatarData.bodyColor;
-  roundRect(ctx, cx - 32, cy + 20, 64, 72, 8);
-
-  ctx.fillStyle = darkenColor(avatarData.bodyColor, 30);
-  ctx.fillRect(cx - 25, cy + 87, 20, 42);
-  ctx.fillRect(cx + 5, cy + 87, 20, 42);
-
-  ctx.fillStyle = '#333';
-  ctx.fillRect(cx - 27, cy + 122, 24, 8);
-  ctx.fillRect(cx + 3, cy + 122, 24, 8);
-
-  ctx.fillStyle = avatarData.bodyColor;
-  ctx.fillRect(cx - 48, cy + 25, 16, 50);
-  ctx.fillRect(cx + 32, cy + 25, 16, 50);
-
-  ctx.fillStyle = lightenColor(avatarData.bodyColor, 20);
-  ctx.beginPath(); ctx.arc(cx - 40, cy + 77, 8, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + 40, cy + 77, 8, 0, Math.PI * 2); ctx.fill();
-
-  ctx.fillStyle = avatarData.bodyColor;
-  ctx.beginPath(); ctx.arc(cx, cy - 12, 38, 0, Math.PI * 2); ctx.fill();
-
-  drawFace(ctx, cx, cy - 12, avatarData.face);
-  drawHat(ctx, cx, cy - 50, avatarData.hat);
-  drawAccessory(ctx, cx, cy, avatarData.accessory);
-}
-
-function drawFace(ctx, cx, cy, face) {
-  switch(face) {
-    case 'smile':
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 5, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 5, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 4, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 4, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(cx, cy + 7, 12, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
-      break;
-    case 'cool':
-      ctx.fillStyle = '#333';
-      ctx.fillRect(cx - 20, cy - 8, 40, 9);
-      ctx.fillStyle = '#00a2ff';
-      ctx.fillRect(cx - 16, cy - 7, 14, 7);
-      ctx.fillRect(cx + 2, cy - 7, 14, 7);
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(cx, cy + 7, 12, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
-      break;
-    case 'laugh':
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 7, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 7, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 6, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 6, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 8, 12, 9, 0, 0, Math.PI); ctx.fill();
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 8, 8, 5, 0, 0, Math.PI); ctx.fill();
-      break;
-    case 'angry':
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 3, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 3, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 2, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 2, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(cx - 16, cy - 14); ctx.lineTo(cx - 7, cy - 10); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx + 16, cy - 14); ctx.lineTo(cx + 7, cy - 10); ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, cy + 8, 7, 0.2 * Math.PI, 0.8 * Math.PI); ctx.stroke();
-      break;
-    case 'wink':
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 5, 5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.arc(cx - 12, cy - 4, 2.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(cx + 12, cy - 4, 5, 0, Math.PI); ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, cy + 7, 10, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
-      break;
-    case 'star':
-      ctx.fillStyle = '#ffd93d';
-      drawStar(ctx, cx, cy - 5, 5, 10, 5);
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.arc(cx - 5, cy - 7, 2, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 5, cy - 7, 2, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(cx, cy + 4, 7, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
-      break;
+  if (typeof render3DAvatar === 'function') {
+    render3DAvatar(avatarData);
   }
-}
-
-function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
-  let rot = Math.PI / 2 * 3;
-  const step = Math.PI / spikes;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - outerR);
-  for (let i = 0; i < spikes; i++) {
-    ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
-    rot += step;
-    ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
-    rot += step;
-  }
-  ctx.closePath(); ctx.fill();
-}
-
-function drawHat(ctx, cx, cy, hat) {
-  switch(hat) {
-    case 'crown':
-      ctx.fillStyle = '#ffd93d';
-      ctx.fillRect(cx - 22, cy, 44, 13);
-      ctx.beginPath(); ctx.moveTo(cx - 22, cy); ctx.lineTo(cx - 17, cy - 13); ctx.lineTo(cx - 12, cy); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx - 8, cy); ctx.lineTo(cx, cy - 18); ctx.lineTo(cx + 8, cy); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx + 12, cy); ctx.lineTo(cx + 17, cy - 13); ctx.lineTo(cx + 22, cy); ctx.fill();
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath(); ctx.arc(cx - 12, cy + 4, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx, cy + 4, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 12, cy + 4, 3, 0, Math.PI * 2); ctx.fill();
-      break;
-    case 'cap':
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 4, 30, 10, 0, Math.PI, 0); ctx.fill();
-      ctx.fillRect(cx - 30, cy, 60, 7);
-      ctx.fillStyle = '#c0392b';
-      ctx.fillRect(cx - 33, cy + 3, 18, 5);
-      break;
-    case 'tophat':
-      ctx.fillStyle = '#333';
-      ctx.fillRect(cx - 17, cy - 35, 34, 38);
-      ctx.fillRect(cx - 24, cy, 48, 8);
-      ctx.fillStyle = '#e74c3c';
-      ctx.fillRect(cx - 17, cy - 2, 34, 5);
-      break;
-    case 'headphones':
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(cx, cy - 8, 32, Math.PI, 0); ctx.stroke();
-      ctx.fillStyle = '#333';
-      roundRect(ctx, cx - 36, cy - 6, 12, 18, 3);
-      roundRect(ctx, cx + 24, cy - 6, 12, 18, 3);
-      ctx.fillStyle = '#00a2ff';
-      roundRect(ctx, cx - 33, cy - 3, 7, 11, 2);
-      roundRect(ctx, cx + 26, cy - 3, 7, 11, 2);
-      break;
-    case 'halo':
-      ctx.strokeStyle = '#ffd93d'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.ellipse(cx, cy - 26, 24, 7, 0, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = '#ffd93d88'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.ellipse(cx, cy - 29, 24, 7, 0, 0, Math.PI * 2); ctx.stroke();
-      break;
-  }
-}
-
-function drawAccessory(ctx, cx, cy, acc) {
-  switch(acc) {
-    case 'sword':
-      ctx.fillStyle = '#c0c0c0';
-      ctx.fillRect(cx + 44, cy - 8, 5, 44);
-      ctx.fillStyle = '#8b4513';
-      ctx.fillRect(cx + 38, cy + 32, 16, 7);
-      ctx.fillStyle = '#ffd93d';
-      ctx.fillRect(cx + 44, cy + 36, 5, 5);
-      break;
-    case 'shield':
-      ctx.fillStyle = '#2196f3';
-      ctx.beginPath();
-      ctx.moveTo(cx - 56, cy + 10); ctx.lineTo(cx - 38, cy + 10);
-      ctx.lineTo(cx - 38, cy + 40); ctx.lineTo(cx - 47, cy + 48);
-      ctx.lineTo(cx - 56, cy + 40); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#ffd93d';
-      ctx.beginPath(); ctx.arc(cx - 47, cy + 28, 7, 0, Math.PI * 2); ctx.fill();
-      break;
-    case 'wings':
-      ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.8;
-      ctx.beginPath();
-      ctx.moveTo(cx - 32, cy + 18); ctx.quadraticCurveTo(cx - 70, cy, cx - 62, cy + 35);
-      ctx.quadraticCurveTo(cx - 57, cy + 48, cx - 32, cy + 44); ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(cx + 32, cy + 18); ctx.quadraticCurveTo(cx + 70, cy, cx + 62, cy + 35);
-      ctx.quadraticCurveTo(cx + 57, cy + 48, cx + 32, cy + 44); ctx.fill();
-      ctx.globalAlpha = 1;
-      break;
-    case 'cape':
-      ctx.fillStyle = '#9b59b6';
-      ctx.beginPath();
-      ctx.moveTo(cx - 26, cy + 18); ctx.quadraticCurveTo(cx - 40, cy + 70, cx - 22, cy + 105);
-      ctx.lineTo(cx + 22, cy + 105); ctx.quadraticCurveTo(cx + 40, cy + 70, cx + 26, cy + 18);
-      ctx.closePath(); ctx.fill();
-      break;
-    case 'backpack':
-      ctx.fillStyle = '#e67e22';
-      roundRect(ctx, cx - 48, cy + 14, 18, 30, 4);
-      ctx.fillStyle = '#d35400';
-      ctx.fillRect(cx - 46, cy + 20, 14, 3);
-      break;
-  }
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill();
-}
-
-function darkenColor(hex, amount) {
-  const c = hexToRgb(hex);
-  return `rgb(${Math.max(0, c.r - amount)},${Math.max(0, c.g - amount)},${Math.max(0, c.b - amount)})`;
-}
-
-function lightenColor(hex, amount) {
-  const c = hexToRgb(hex);
-  return `rgb(${Math.min(255, c.r + amount)},${Math.min(255, c.g + amount)},${Math.min(255, c.b + amount)})`;
-}
-
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return { r, g, b };
 }
 
 async function saveAvatar() {
@@ -758,6 +530,112 @@ async function saveAvatar() {
     document.getElementById('user-avatar').style.background = avatarData.bodyColor;
     showToast('Avatar saved!');
   }
+}
+
+// --- Assets ---
+let currentAssetType = 'all';
+
+function openAssetUpload() {
+  document.getElementById('asset-upload-modal').classList.add('active');
+}
+
+async function uploadAsset() {
+  const name = document.getElementById('asset-name').value.trim();
+  const type = document.getElementById('asset-type').value;
+  const fileInput = document.getElementById('asset-file');
+  const err = document.getElementById('asset-upload-error');
+  err.textContent = '';
+
+  if (!name) { err.textContent = 'Asset name required'; return; }
+  if (!fileInput.files.length) { err.textContent = 'Please select a file'; return; }
+
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+  formData.append('name', name);
+  formData.append('type', type);
+
+  try {
+    const res = await fetch('/api/assets/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) { err.textContent = data.error; return; }
+    currentUser.flux = data.flux;
+    document.getElementById('flux-display').textContent = data.flux;
+    document.getElementById('asset-upload-modal').classList.remove('active');
+    document.getElementById('asset-name').value = '';
+    document.getElementById('asset-file').value = '';
+    showToast('Asset uploaded! -10 Flux');
+    browseAssets(currentAssetType);
+  } catch (e) {
+    err.textContent = 'Upload failed. Try again.';
+  }
+}
+
+async function browseAssets(type, btn) {
+  currentAssetType = type || 'all';
+  if (btn) {
+    document.querySelectorAll('#asset-filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const search = document.getElementById('asset-search')?.value || '';
+  let url = '/api/assets?';
+  if (type && type !== 'all') url += `type=${type}&`;
+  if (search) url += `search=${encodeURIComponent(search)}`;
+
+  const data = await api(url);
+  const grid = document.getElementById('asset-grid');
+  const noMsg = document.getElementById('no-assets-msg');
+  const assets = data.assets || [];
+
+  if (assets.length === 0) {
+    grid.innerHTML = '';
+    noMsg.style.display = 'block';
+    return;
+  }
+  noMsg.style.display = 'none';
+
+  const typeIcons = { avatar: '👤', model: '🧊', texture: '🎨', mesh: '🔷', audio: '🎵', script: '📜' };
+  const typeColors = { avatar: '#9b59b6', model: '#3498db', texture: '#2ecc71', mesh: '#e67e22', audio: '#e74c3c', script: '#f39c12' };
+
+  grid.innerHTML = assets.map(a => `
+    <div class="game-card" style="cursor:default">
+      <div class="game-thumb" style="background:linear-gradient(135deg, ${typeColors[a.type] || '#333'}33, ${typeColors[a.type] || '#333'}22);font-size:42px;display:flex;align-items:center;justify-content:center">
+        ${a.preview ? `<img src="${esc(a.preview)}" style="max-width:100%;max-height:100%;object-fit:cover">` : typeIcons[a.type] || '📦'}
+      </div>
+      <div class="game-info">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="friend-avatar" style="background:${a.avatar_color};width:22px;height:22px;font-size:9px">${(a.username||'?')[0].toUpperCase()}</div>
+          <span style="font-size:11px;color:#999">${esc(a.username)}</span>
+        </div>
+        <div class="game-name">${esc(a.name)}</div>
+        <div class="game-meta">
+          <span class="asset-type-badge" style="background:${typeColors[a.type] || '#333'}22;color:${typeColors[a.type] || '#333'};padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600">${a.type}</span>
+          <span>⬇ ${a.downloads || 0}</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:4px">
+          <button class="btn btn-sm btn-primary" onclick="downloadAsset('${a.id}')">Download</button>
+          ${a.user_id === currentUser?.id ? `<button class="btn btn-sm btn-danger" onclick="deleteAsset('${a.id}')">Delete</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function searchAssets() {
+  browseAssets(currentAssetType);
+}
+
+async function downloadAsset(id) {
+  await api(`/api/assets/${id}/download`, { method: 'POST' });
+  showToast('Download counted!');
+  browseAssets(currentAssetType);
+}
+
+async function deleteAsset(id) {
+  if (!confirm('Delete this asset? This cannot be undone.')) return;
+  await api(`/api/assets/${id}`, { method: 'DELETE' });
+  showToast('Asset deleted');
+  browseAssets(currentAssetType);
 }
 
 // --- Utils ---
@@ -774,7 +652,7 @@ function showToast(msg) {
 // Scroll spy for sidebar
 window.addEventListener('scroll', () => {
   if (!currentUser) return;
-  const sections = ['sec-home', 'sec-chart', 'sec-creations', 'sec-friends', 'sec-shop', 'sec-avatar'];
+  const sections = ['sec-home', 'sec-chart', 'sec-creations', 'sec-friends', 'sec-shop', 'sec-assets', 'sec-avatar'];
   let current = sections[0];
   for (const id of sections) {
     const el = document.getElementById(id);
@@ -790,11 +668,12 @@ const sectionObserver = new IntersectionObserver((entries) => {
     if (e.target.id === 'sec-friends') loadFriends();
     if (e.target.id === 'sec-avatar') loadAvatarEditor();
     if (e.target.id === 'sec-creations') loadMyGames();
+    if (e.target.id === 'sec-assets') browseAssets('all');
   });
 }, { threshold: 0.1 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  ['sec-friends', 'sec-avatar', 'sec-creations'].forEach(id => {
+  ['sec-friends', 'sec-avatar', 'sec-creations', 'sec-assets'].forEach(id => {
     const el = document.getElementById(id);
     if (el) sectionObserver.observe(el);
   });

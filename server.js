@@ -6,14 +6,29 @@ const { v4: uuidv4 } = require('uuid');
 const http = require('http');
 const { WebSocketServer } = require('ws');
 const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-const db = new Database('Arcadia.db');
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(path.join(DATA_DIR, 'uploads'))) fs.mkdirSync(path.join(DATA_DIR, 'uploads'), { recursive: true });
+
+const db = new Database(path.join(DATA_DIR, 'Arcadia.db'));
 db.pragma('journal_mode = WAL');
+
+// Auto-backup database
+try {
+  const backupPath = path.join(DATA_DIR, 'Arcadia.db.backup');
+  if (fs.existsSync(path.join(DATA_DIR, 'Arcadia.db'))) {
+    fs.copyFileSync(path.join(DATA_DIR, 'Arcadia.db'), backupPath);
+    console.log('Database backed up');
+  }
+} catch(e) { console.log('Backup skipped:', e.message); }
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -81,6 +96,19 @@ db.exec(`
     FOREIGN KEY (from_user_id) REFERENCES users(id),
     FOREIGN KEY (to_user_id) REFERENCES users(id)
   );
+  CREATE TABLE IF NOT EXISTS assets (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    filepath TEXT NOT NULL,
+    preview TEXT DEFAULT '',
+    downloads INTEGER DEFAULT 0,
+    flux_cost INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
 `);
 
 // Migrate gemz -> flux column names
@@ -100,6 +128,26 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true }
 }));
+
+// --- Uploads ---
+const uploadDirs = ['uploads', 'uploads/avatars', 'uploads/models', 'uploads/textures', 'uploads/meshes', 'uploads/audio', 'uploads/scripts'];
+uploadDirs.forEach(dir => { const p = path.join(DATA_DIR, dir); if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true }); });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const type = req.body.type || 'models';
+    const dir = path.join(DATA_DIR, `uploads/${type}s`);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${uuidv4()}${ext}`);
+  }
+});
+const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
+
+app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));
 
 function requireAuth(req, res, next) {
   if (!req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
@@ -523,6 +571,74 @@ app.post('/api/premium/subscribe', requireAuth, (req, res) => {
 
 app.post('/api/premium/cancel', requireAuth, (req, res) => {
   db.prepare('UPDATE users SET premium = 0, premium_expires = NULL WHERE id = ?').run(req.session.userId);
+  res.json({ success: true });
+});
+
+// --- Assets ---
+const ASSET_TYPES = ['avatar', 'model', 'texture', 'mesh', 'audio', 'script'];
+
+app.post('/api/assets/upload', requireAuth, upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  const { name, type, preview } = req.body;
+  if (!name || !type) return res.status(400).json({ error: 'Name and type required' });
+  if (!ASSET_TYPES.includes(type)) return res.status(400).json({ error: 'Invalid asset type' });
+
+  const user = db.prepare('SELECT flux FROM users WHERE id = ?').get(req.session.userId);
+  if (user.flux < 10) return res.status(400).json({ error: 'Not enough Flux (10 required)' });
+
+  const id = uuidv4();
+  const filepath = `/${req.file.path.replace(/\\/g, '/')}`;
+  db.prepare('INSERT INTO assets (id, user_id, name, type, filename, filepath, preview, flux_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+    .run(id, req.session.userId, name, type, req.file.filename, filepath, preview || '', 10);
+  addFlux(req.session.userId, -10, `Uploaded asset: ${name}`);
+
+  const updated = db.prepare('SELECT flux FROM users WHERE id = ?').get(req.session.userId);
+  res.json({ success: true, asset: { id, name, type, filepath }, flux: updated.flux });
+});
+
+app.get('/api/assets', (req, res) => {
+  const { type, search } = req.query;
+  let query = `SELECT a.*, u.username, u.avatar_color FROM assets a JOIN users u ON a.user_id = u.id`;
+  const params = [];
+  const conditions = [];
+
+  if (type && ASSET_TYPES.includes(type)) {
+    conditions.push('a.type = ?');
+    params.push(type);
+  }
+  if (search) {
+    conditions.push('a.name LIKE ?');
+    params.push(`%${search}%`);
+  }
+  if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
+  query += ' ORDER BY a.created_at DESC LIMIT 50';
+
+  const assets = db.prepare(query).all(...params);
+  res.json({ assets });
+});
+
+app.get('/api/assets/:id', (req, res) => {
+  const asset = db.prepare(`
+    SELECT a.*, u.username, u.avatar_color
+    FROM assets a JOIN users u ON a.user_id = u.id WHERE a.id = ?
+  `).get(req.params.id);
+  if (!asset) return res.status(404).json({ error: 'Asset not found' });
+  res.json({ asset });
+});
+
+app.post('/api/assets/:id/download', (req, res) => {
+  db.prepare('UPDATE assets SET downloads = downloads + 1 WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.delete('/api/assets/:id', requireAuth, (req, res) => {
+  const asset = db.prepare('SELECT * FROM assets WHERE id = ?').get(req.params.id);
+  if (!asset) return res.status(404).json({ error: 'Asset not found' });
+  if (asset.user_id !== req.session.userId) return res.status(403).json({ error: 'Not authorized' });
+
+  const filePath = path.join(__dirname, asset.filepath);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  db.prepare('DELETE FROM assets WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
 
