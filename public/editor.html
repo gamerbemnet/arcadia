@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Editor - Arcadia</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #1a1d20; font-family: 'Source Sans Pro', sans-serif; }
+    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #232527; border-bottom: 1px solid #333; color: #fff; height: 44px; }
+    .toolbar .title { flex: 1; font-weight: 600; font-size: 14px; }
+    .layout { display: flex; height: calc(100vh - 44px); }
+    .panel { width: 200px; background: #fff; border-right: 1px solid #e3e5e7; padding: 12px; overflow-y: auto; flex-shrink: 0; }
+    .panel h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 8px; font-weight: 700; }
+    .canvas-wrap { flex: 1; position: relative; background: #1a1d20; overflow: hidden; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+    .props { width: 220px; background: #fff; border-left: 1px solid #e3e5e7; padding: 12px; overflow-y: auto; flex-shrink: 0; }
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 12px; }
+    .tool-btn { padding: 8px 4px; border: 1px solid #e3e5e7; border-radius: 6px; background: #f2f4f5; cursor: pointer; text-align: center; font-size: 11px; font-family: inherit; transition: all 0.12s; }
+    .tool-btn:hover { border-color: #00a2ff; }
+    .tool-btn.active { background: #00a2ff; border-color: #00a2ff; color: #fff; }
+    .tool-btn span { display: block; font-size: 16px; margin-bottom: 2px; }
+    .obj-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 2px; }
+    .obj-item:hover, .obj-item.selected { background: #f2f4f5; }
+    .prop-row { margin-bottom: 10px; }
+    .prop-row label { display: block; font-size: 11px; color: #999; margin-bottom: 3px; font-weight: 600; text-transform: uppercase; }
+    .prop-row input, .prop-row select { width: 100%; padding: 6px 8px; border: 1px solid #e3e5e7; border-radius: 4px; font-size: 12px; font-family: inherit; outline: none; }
+    .prop-row input:focus, .prop-row select:focus { border-color: #00a2ff; }
+    .prop-row input[type="color"] { height: 30px; padding: 2px; cursor: pointer; }
+    .save-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(0,162,255,0.12); color: #00a2ff; }
+    .save-badge.saved { background: rgba(0,176,111,0.12); color: #00b06f; }
+    .btn { padding: 6px 14px; border: 1px solid #e3e5e7; border-radius: 6px; background: #fff; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; }
+    .btn-primary { background: #00a2ff; border-color: #00a2ff; color: #fff; }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .btn-danger { background: #e74c3c; border-color: #e74c3c; color: #fff; }
+    .axis-label { position: absolute; color: rgba(255,255,255,0.4); font-size: 11px; pointer-events: none; }
+    .cam-info { position: absolute; bottom: 10px; left: 10px; color: rgba(255,255,255,0.4); font-size: 11px; pointer-events: none; }
+    .shortcut-hint { position: absolute; top: 10px; right: 10px; color: rgba(255,255,255,0.3); font-size: 10px; pointer-events: none; text-align: right; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn btn-sm" onclick="window.location.href='/'" style="background:#333;color:#fff;border-color:#444">🏠 Home</button>
+  <span class="title" id="editor-title">3D Editor</span>
+  <span class="save-badge" id="save-status">● Saved</span>
+  <button class="btn btn-sm" onclick="saveGame()" style="background:#333;color:#fff;border-color:#444">💾 Save</button>
+  <button class="btn btn-sm btn-primary" onclick="testPlay()">▶ Play</button>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Tools</h3>
+    <div class="tool-grid">
+      <button class="tool-btn active" data-tool="select" onclick="setTool('select')"><span>🖱️</span>Select</button>
+      <button class="tool-btn" data-tool="move" onclick="setTool('move')"><span>✋</span>Move</button>
+      <button class="tool-btn" data-tool="cube" onclick="setTool('cube')"><span>📦</span>Cube</button>
+      <button class="tool-btn" data-tool="sphere" onclick="setTool('sphere')"><span>⚽</span>Sphere</button>
+      <button class="tool-btn" data-tool="cylinder" onclick="setTool('cylinder')"><span>🔵</span>Cylinder</button>
+      <button class="tool-btn" data-tool="floor" onclick="setTool('floor')"><span>⬜</span>Floor</button>
+      <button class="tool-btn" data-tool="ramp" onclick="setTool('ramp')"><span>📐</span>Ramp</button>
+      <button class="tool-btn" data-tool="spawn" onclick="setTool('spawn')"><span>🚩</span>Spawn</button>
+      <button class="tool-btn" data-tool="delete" onclick="setTool('delete')"><span>🗑️</span>Delete</button>
+    </div>
+
+    <h3>Scene</h3>
+    <div id="object-list"></div>
+
+    <div style="margin-top:14px">
+      <h3>Game Info</h3>
+      <div class="prop-row"><label>Name</label><input id="game-name-input" onchange="updateGameName(this.value)"></div>
+      <div class="prop-row"><label>Genre</label>
+        <select id="game-genre-input" onchange="updateGameGenre(this.value)">
+          <option>Adventure</option><option>Obby</option><option>Tycoon</option><option>RPG</option>
+          <option>Simulator</option><option>Horror</option><option>Racing</option><option>Building</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="editor-canvas"></canvas>
+    <div class="cam-info" id="cam-info">Drag: Orbit · Scroll: Zoom · Shift+Drag: Pan</div>
+    <div class="shortcut-hint">Right-click: Pan<br>Left-click: Select/Place<br>Del: Delete selected</div>
+  </div>
+
+  <div class="props">
+    <h3>Properties</h3>
+    <div id="props-panel"><p style="color:#999;font-size:12px">Select an object to edit</p></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const gameId = params.get('id');
+let gameData = { objects: [], spawn: { x: 0, y: 1, z: 0 } };
+let gameName = 'Untitled Game';
+let gameGenre = 'Adventure';
+let currentTool = 'select';
+let selectedObj = null;
+let dirty = false;
+let autoSaveTimer = null;
+
+// 3D Engine
+const canvas = document.getElementById('editor-canvas');
+const ctx = canvas.getContext('2d');
+
+let cam = { theta: Math.PI / 4, phi: Math.PI / 5, dist: 18, target: [0, 0, 0] };
+let isDragging = false;
+let dragButton = 0;
+let lastMouse = { x: 0, y: 0 };
+
+function resize() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth * devicePixelRatio;
+  canvas.height = wrap.clientHeight * devicePixelRatio;
+  canvas.style.width = wrap.clientWidth + 'px';
+  canvas.style.height = wrap.clientHeight + 'px';
+  render();
+}
+window.addEventListener('resize', resize);
+
+function project(x, y, z) {
+  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+  const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
+  const dx = x - cam.target[0], dy = y - cam.target[1], dz = z - cam.target[2];
+  const rx = dx * ct + dz * st;
+  const ry = dy * cp - (dx * st - dz * ct) * sp;
+  const rz = dy * sp + (dx * st - dz * ct) * cp;
+  const w = canvas.width / devicePixelRatio;
+  const h = canvas.height / devicePixelRatio;
+  const fov = 600;
+  const scale = fov / (rz + cam.dist + 10);
+  return { x: w / 2 + rx * scale, y: h / 2 - ry * scale, z: rz, scale };
+}
+
+function unproject(px, py, groundY) {
+  const w = canvas.width / devicePixelRatio;
+  const h = canvas.height / devicePixelRatio;
+  const ndcX = (px - w / 2) / (w / 2);
+  const ndcY = -(py - h / 2) / (h / 2);
+  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+  const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
+  const dir = [
+    ndcX,
+    ndcY * cp + sp,
+    ndcY * sp - cp
+  ];
+  const camPos = [
+    cam.target[0] - cam.dist * Math.sin(cam.theta) * Math.cos(cam.phi),
+    cam.target[1] + cam.dist * Math.sin(cam.phi),
+    cam.target[2] + cam.dist * Math.cos(cam.theta) * Math.cos(cam.phi)
+  ];
+  if (Math.abs(dir[1]) < 0.001) return null;
+  const t = (groundY - camPos[1]) / dir[1];
+  if (t < 0) return null;
+  return [camPos[0] + dir[0] * t, groundY, camPos[2] + dir[2] * t];
+}
+
+function render() {
+  const w = canvas.width, h = canvas.height;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+
+  // Sky gradient
+  const grd = ctx.createLinearGradient(0, 0, 0, h / devicePixelRatio);
+  grd.addColorStop(0, '#1a2332');
+  grd.addColorStop(1, '#0d1117');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, w / devicePixelRatio, h / devicePixelRatio);
+
+  // Grid on ground
+  const gridSize = 20;
+  const gridStep = 1;
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = -gridSize; i <= gridSize; i += gridStep) {
+    const a = project(i, 0, -gridSize);
+    const b = project(i, 0, gridSize);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    const c = project(-gridSize, 0, i);
+    const d = project(gridSize, 0, i);
+    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.stroke();
+  }
+
+  // Axis lines
+  const origin = project(0, 0, 0);
+  const xEnd = project(3, 0, 0);
+  const yEnd = project(0, 3, 0);
+  const zEnd = project(0, 0, 3);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xEnd.x, xEnd.y); ctx.stroke();
+  ctx.strokeStyle = '#2ecc71'; ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yEnd.x, yEnd.y); ctx.stroke();
+  ctx.strokeStyle = '#3498db'; ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zEnd.x, zEnd.y); ctx.stroke();
+
+  // Objects sorted by depth
+  const sorted = gameData.objects.map((o, i) => {
+    const p = project(o.x + (o.w || 1) / 2, o.y + (o.h || 1) / 2, o.z + (o.d || 1) / 2);
+    return { obj: o, idx: i, depth: p.z };
+  }).sort((a, b) => b.depth - a.depth);
+
+  sorted.forEach(({ obj: o, idx }) => {
+    const isSelected = selectedObj === idx;
+    const cx = o.x + (o.w || 1) / 2;
+    const cy = o.y + (o.h || 1) / 2;
+    const cz = o.z + (o.d || 1) / 2;
+    const hw = (o.w || 1) / 2, hh = (o.h || 1) / 2, hd = (o.d || 1) / 2;
+
+    if (o.type === 'cube' || o.type === 'floor' || o.type === 'ramp') {
+      drawCube(o.x, o.y, o.z, o.w || 1, o.h || 1, o.d || 1, o.color, isSelected);
+    } else if (o.type === 'sphere') {
+      drawSphere(cx, cy, cz, (o.w || 1) / 2, o.color, isSelected);
+    } else if (o.type === 'cylinder') {
+      drawCylinder(cx, cy, cz, (o.w || 1) / 2, o.h || 1, o.color, isSelected);
+    } else if (o.type === 'spawn') {
+      drawSpawn(cx, cy, cz, isSelected);
+    }
+
+    if (isSelected) {
+      const selP = project(cx, hh + 0.3, cz);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Source Sans Pro';
+      ctx.textAlign = 'center';
+      ctx.fillText(o.label || o.type, selP.x, selP.y - 6);
+    }
+  });
+}
+
+function drawCube(x, y, z, w, h, d, color, selected) {
+  const v = [
+    project(x, y, z), project(x + w, y, z), project(x + w, y, z + d), project(x, y, z + d),
+    project(x, y + h, z), project(x + w, y + h, z), project(x + w, y + h, z + d), project(x, y + h, z + d)
+  ];
+
+  // Top face
+  ctx.fillStyle = lighten(color, 20);
+  ctx.beginPath();
+  ctx.moveTo(v[4].x, v[4].y); ctx.lineTo(v[5].x, v[5].y);
+  ctx.lineTo(v[6].x, v[6].y); ctx.lineTo(v[7].x, v[7].y);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
+  ctx.lineWidth = selected ? 2 : 1;
+  ctx.stroke();
+
+  // Front face
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(v[4].x, v[4].y); ctx.lineTo(v[5].x, v[5].y);
+  ctx.lineTo(v[1].x, v[1].y); ctx.lineTo(v[0].x, v[0].y);
+  ctx.closePath(); ctx.fill();
+  ctx.stroke();
+
+  // Right face
+  ctx.fillStyle = darken(color, 20);
+  ctx.beginPath();
+  ctx.moveTo(v[5].x, v[5].y); ctx.lineTo(v[6].x, v[6].y);
+  ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[1].x, v[1].y);
+  ctx.closePath(); ctx.fill();
+  ctx.stroke();
+
+  // Left face
+  ctx.fillStyle = darken(color, 35);
+  ctx.beginPath();
+  ctx.moveTo(v[7].x, v[7].y); ctx.lineTo(v[4].x, v[4].y);
+  ctx.lineTo(v[0].x, v[0].y); ctx.lineTo(v[3].x, v[3].y);
+  ctx.closePath(); ctx.fill();
+  ctx.stroke();
+
+  // Back face
+  ctx.fillStyle = darken(color, 45);
+  ctx.beginPath();
+  ctx.moveTo(v[6].x, v[6].y); ctx.lineTo(v[7].x, v[7].y);
+  ctx.lineTo(v[3].x, v[3].y); ctx.lineTo(v[2].x, v[2].y);
+  ctx.closePath(); ctx.fill();
+  ctx.stroke();
+
+  // Bottom face
+  ctx.fillStyle = darken(color, 50);
+  ctx.beginPath();
+  ctx.moveTo(v[0].x, v[0].y); ctx.lineTo(v[1].x, v[1].y);
+  ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[3].x, v[3].y);
+  ctx.closePath(); ctx.fill();
+  ctx.stroke();
+}
+
+function drawSphere(cx, cy, cz, r, color, selected) {
+  const p = project(cx, cy, cz);
+  const scale = p.scale;
+  const pr = r * scale * 0.8;
+  if (pr < 2) return;
+
+  const grd = ctx.createRadialGradient(p.x - pr * 0.3, p.y - pr * 0.3, pr * 0.1, p.x, p.y, pr);
+  grd.addColorStop(0, lighten(color, 60));
+  grd.addColorStop(0.5, color);
+  grd.addColorStop(1, darken(color, 40));
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pr, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
+  ctx.lineWidth = selected ? 2 : 1;
+  ctx.stroke();
+}
+
+function drawCylinder(cx, cy, cz, r, h, color, selected) {
+  const top = project(cx, cy + h / 2, cz);
+  const bot = project(cx, cy - h / 2, cz);
+  const scale = top.scale;
+  const pr = r * scale * 0.8;
+  if (pr < 2) return;
+
+  // Body
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(bot.x, bot.y, pr, pr * 0.3, 0, 0, Math.PI);
+  ctx.lineTo(top.x - pr, top.y);
+  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, Math.PI, 0, true);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
+  ctx.lineWidth = selected ? 2 : 1;
+  ctx.beginPath();
+  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawSpawn(cx, cy, cz, selected) {
+  const p = project(cx, cy + 1, cz);
+  const s = p.scale * 0.4;
+  const size = Math.max(8, 16 * (s / 10));
+
+  // Flag pole
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  const bot = project(cx, cy, cz);
+  ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+
+  // Flag
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(p.x + size, p.y + size * 0.3);
+  ctx.lineTo(p.x, p.y + size * 0.6);
+  ctx.closePath();
+  ctx.fill();
+
+  if (selected) {
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(p.x, p.y + size * 0.3, size * 0.8, 0, Math.PI * 2); ctx.stroke();
+  }
+}
+
+function getObjAt(px, py) {
+  for (let i = gameData.objects.length - 1; i >= 0; i--) {
+    const o = gameData.objects[i];
+    const cx = o.x + (o.w || 1) / 2;
+    const cy = o.y + (o.h || 1) / 2;
+    const cz = o.z + (o.d || 1) / 2;
+    const p = project(cx, cy, cz);
+    let r;
+    if (o.type === 'sphere') r = ((o.w || 1) / 2) * p.scale * 0.8;
+    else if (o.type === 'spawn') r = 16;
+    else r = Math.max((o.w || 1), (o.h || 1), (o.d || 1)) * p.scale * 0.4;
+    r = Math.max(r, 10);
+    const dx = px - p.x, dy = py - p.y;
+    if (dx * dx + dy * dy < r * r) return i;
+  }
+  return -1;
+}
+
+// Camera controls
+canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  dragButton = e.button;
+  lastMouse = { x: e.clientX, y: e.clientY };
+
+  if (e.button === 2 || e.shiftKey) {
+    isDragging = true;
+    return;
+  }
+
+  if (currentTool === 'select' || currentTool === 'move') {
+    const idx = getObjAt(x, y);
+    if (idx >= 0) { selectedObj = idx; isDragging = true; }
+    else { selectedObj = null; }
+    updateProps();
+    updateObjectList();
+    render();
+  } else if (currentTool === 'delete') {
+    const idx = getObjAt(x, y);
+    if (idx >= 0) { gameData.objects.splice(idx, 1); selectedObj = null; updateProps(); updateObjectList(); markDirty(); render(); }
+  } else {
+    const ground = unproject(x, y, 0);
+    if (!ground) return;
+    const snap = (v) => Math.round(v);
+    const sizes = { cube: [1, 1, 1], sphere: [1, 1, 1], cylinder: [0.8, 1.2, 0.8], floor: [4, 0.4, 4], ramp: [2, 1, 2], spawn: [0.5, 1.5, 0.5] };
+    const sz = sizes[currentTool] || [1, 1, 1];
+    const colors = ['#00a2ff','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63'];
+    const color = currentTool === 'spawn' ? '#e74c3c' : colors[gameData.objects.length % colors.length];
+    const obj = {
+      type: currentTool,
+      x: snap(ground[0] - sz[0] / 2), y: sz[1] / 2, z: snap(ground[2] - sz[2] / 2),
+      w: sz[0], h: sz[1], d: sz[2],
+      color, label: currentTool + (gameData.objects.length + 1),
+      physics: currentTool !== 'spawn'
+    };
+    gameData.objects.push(obj);
+    selectedObj = gameData.objects.length - 1;
+    updateProps();
+    updateObjectList();
+    markDirty();
+    render();
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const dx = e.clientX - lastMouse.x;
+  const dy = e.clientY - lastMouse.y;
+  lastMouse = { x: e.clientX, y: e.clientY };
+
+  if (dragButton === 2 || e.shiftKey) {
+    const sensitivity = 0.01;
+    const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+    cam.target[0] -= dx * ct * sensitivity * cam.dist * 0.2;
+    cam.target[2] += dx * st * sensitivity * cam.dist * 0.2;
+    cam.target[1] += dy * sensitivity * cam.dist * 0.2;
+    render();
+    return;
+  }
+
+  if ((currentTool === 'select' || currentTool === 'move') && selectedObj !== null) {
+    const rect = canvas.getBoundingClientRect();
+    const ground = unproject(e.clientX - rect.left, e.clientY - rect.top, 0);
+    if (ground) {
+      const o = gameData.objects[selectedObj];
+      o.x = Math.round(ground[0] - (o.w || 1) / 2);
+      o.z = Math.round(ground[2] - (o.d || 1) / 2);
+      markDirty();
+      render();
+    }
+  }
+});
+
+canvas.addEventListener('mouseup', () => { isDragging = false; });
+canvas.addEventListener('mouseleave', () => { isDragging = false; });
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  cam.dist += e.deltaY * 0.01;
+  cam.dist = Math.max(3, Math.min(50, cam.dist));
+  render();
+}, { passive: false });
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Delete' && selectedObj !== null) {
+    gameData.objects.splice(selectedObj, 1);
+    selectedObj = null;
+    updateProps();
+    updateObjectList();
+    markDirty();
+    render();
+  }
+});
+
+function setTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
+  canvas.style.cursor = tool === 'select' || tool === 'move' ? 'default' : 'crosshair';
+}
+
+function updateObjectList() {
+  const icons = { spawn: '🚩', cube: '📦', sphere: '⚽', cylinder: '🔵', floor: '⬜', ramp: '📐' };
+  document.getElementById('object-list').innerHTML = gameData.objects.map((o, i) =>
+    `<div class="obj-item ${selectedObj === i ? 'selected' : ''}" onclick="selectedObj=${i};updateProps();updateObjectList();render()">${icons[o.type] || '📦'} ${o.label}</div>`
+  ).join('');
+}
+
+function updateProps() {
+  const panel = document.getElementById('props-panel');
+  if (selectedObj === null || !gameData.objects[selectedObj]) {
+    panel.innerHTML = '<p style="color:#999;font-size:12px">Select an object to edit</p>';
+    return;
+  }
+  const o = gameData.objects[selectedObj];
+  panel.innerHTML = `
+    <div class="prop-row"><label>Label</label><input value="${o.label}" onchange="setProp('label',this.value)"></div>
+    <div class="prop-row"><label>X</label><input type="number" value="${o.x}" onchange="setProp('x',+this.value)"></div>
+    <div class="prop-row"><label>Y (height)</label><input type="number" value="${o.y}" step="0.5" onchange="setProp('y',+this.value)"></div>
+    <div class="prop-row"><label>Z</label><input type="number" value="${o.z}" onchange="setProp('z',+this.value)"></div>
+    <div class="prop-row"><label>Width</label><input type="number" value="${o.w}" step="0.5" onchange="setProp('w',+this.value)"></div>
+    <div class="prop-row"><label>Height</label><input type="number" value="${o.h}" step="0.5" onchange="setProp('h',+this.value)"></div>
+    <div class="prop-row"><label>Depth</label><input type="number" value="${o.d}" step="0.5" onchange="setProp('d',+this.value)"></div>
+    <div class="prop-row"><label>Color</label><input type="color" value="${o.color}" onchange="setProp('color',this.value)"></div>
+    <div class="prop-row"><label>Physics</label><select onchange="setProp('physics',this.value==='true')"><option value="true" ${o.physics?'selected':''}>On</option><option value="false" ${!o.physics?'selected':''}>Off</option></select></div>
+    <button class="btn btn-sm btn-danger" onclick="deleteSelected()" style="margin-top:6px">Delete</button>
+  `;
+}
+
+function setProp(key, val) {
+  if (selectedObj !== null) { gameData.objects[selectedObj][key] = val; updateObjectList(); render(); markDirty(); }
+}
+
+function deleteSelected() {
+  if (selectedObj !== null) { gameData.objects.splice(selectedObj, 1); selectedObj = null; updateProps(); updateObjectList(); markDirty(); render(); }
+}
+
+function updateGameName(v) { gameName = v; document.getElementById('editor-title').textContent = gameName; markDirty(); }
+function updateGameGenre(v) { gameGenre = v; markDirty(); }
+
+function markDirty() {
+  dirty = true;
+  const b = document.getElementById('save-status');
+  b.textContent = '● Unsaved'; b.classList.remove('saved');
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSave, 3000);
+}
+
+async function autoSave() {
+  if (!dirty) return;
+  const b = document.getElementById('save-status');
+  b.textContent = '● Saving...';
+  try {
+    await fetch(`/api/games/${gameId}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: gameData, name: gameName, genre: gameGenre })
+    });
+    dirty = false; b.textContent = '● Saved'; b.classList.add('saved');
+  } catch(e) { b.textContent = '● Failed'; }
+}
+
+async function saveGame() {
+  const b = document.getElementById('save-status');
+  b.textContent = '● Saving...';
+  await fetch(`/api/games/${gameId}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: gameData, name: gameName, genre: gameGenre })
+  });
+  dirty = false; b.textContent = '● Saved'; b.classList.add('saved');
+}
+
+function testPlay() { autoSave(); window.open(`/play.html?id=${gameId}`, '_blank'); }
+
+window.addEventListener('beforeunload', (e) => { if (dirty) { autoSave(); e.preventDefault(); e.returnValue = ''; } });
+
+async function loadGame() {
+  if (!gameId) { window.location.href = '/'; return; }
+  const res = await fetch(`/api/games/${gameId}`);
+  const data = await res.json();
+  if (data.game) {
+    gameData = data.game.data ? JSON.parse(data.game.data) : { objects: [], spawn: { x: 0, y: 1, z: 0 } };
+    gameName = data.game.name; gameGenre = data.game.genre || 'Adventure';
+    document.getElementById('editor-title').textContent = gameName;
+    document.getElementById('game-name-input').value = gameName;
+    document.getElementById('game-genre-input').value = gameGenre;
+    if (!gameData.objects) gameData.objects = [];
+  }
+  resize();
+  updateObjectList();
+}
+
+function lighten(hex, amt) {
+  const c = hexToRgb(hex);
+  return `rgb(${Math.min(255, c.r + amt)},${Math.min(255, c.g + amt)},${Math.min(255, c.b + amt)})`;
+}
+function darken(hex, amt) {
+  const c = hexToRgb(hex);
+  return `rgb(${Math.max(0, c.r - amt)},${Math.max(0, c.g - amt)},${Math.max(0, c.b - amt)})`;
+}
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  return { r: parseInt(hex.slice(0,2),16), g: parseInt(hex.slice(2,4),16), b: parseInt(hex.slice(4,6),16) };
+}
+
+loadGame();
+</script>
+</body>
+</html>

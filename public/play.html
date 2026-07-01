@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playing - Arcadia</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #0d1117; font-family: 'Source Sans Pro', sans-serif; }
+    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; background: #232527; border-bottom: 1px solid #333; color: #fff; height: 40px; position: relative; z-index: 10; }
+    .top-bar .title { font-weight: 700; font-size: 14px; }
+    .top-bar .right { display: flex; gap: 8px; align-items: center; }
+    .btn { padding: 5px 12px; border: 1px solid #444; border-radius: 6px; background: #333; color: #fff; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; }
+    .btn-primary { background: #00a2ff; border-color: #00a2ff; }
+    .game-area { position: relative; height: calc(100vh - 40px); }
+    canvas { display: block; width: 100%; height: 100%; }
+    .controls-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 5px 14px; border-radius: 16px; font-size: 11px; backdrop-filter: blur(4px); pointer-events: none; }
+    .mobile-controls { display: none; position: absolute; bottom: 20px; left: 0; right: 0; padding: 0 20px; pointer-events: none; z-index: 5; }
+    .mobile-controls > div { display: flex; justify-content: space-between; align-items: flex-end; pointer-events: auto; }
+    .mobile-btn { width: 52px; height: 52px; border-radius: 10px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; }
+    .jump-btn { width: 72px; height: 72px; border-radius: 50%; background: rgba(0,162,255,0.3); border: 3px solid rgba(0,162,255,0.5); color: #fff; font-size: 13px; font-weight: 700; -webkit-user-select: none; user-select: none; }
+    .dpad { display: grid; grid-template-columns: repeat(3,52px); grid-template-rows: repeat(2,52px); gap: 4px; }
+    .chat-toggle { position: absolute; bottom: 12px; right: 12px; z-index: 10; }
+    .chat-panel { position: absolute; bottom: 0; right: 0; width: 280px; height: 340px; background: #fff; border-radius: 10px 10px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); display: none; flex-direction: column; z-index: 20; overflow: hidden; }
+    .chat-panel.open { display: flex; }
+    .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #00a2ff; color: #fff; font-size: 13px; font-weight: 700; }
+    .chat-header button { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .chat-msg { display: flex; gap: 6px; align-items: flex-start; }
+    .chat-msg .av { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; color: #fff; flex-shrink: 0; }
+    .chat-msg .nm { font-weight: 700; font-size: 12px; color: #00a2ff; }
+    .chat-msg .tx { font-size: 12px; color: #333; word-wrap: break-word; }
+    .chat-input { display: flex; gap: 4px; padding: 8px; border-top: 1px solid #e3e5e7; }
+    .chat-input input { flex: 1; padding: 6px 10px; border: 1px solid #e3e5e7; border-radius: 14px; font-size: 12px; outline: none; }
+    .chat-input button { padding: 6px 10px; border-radius: 14px; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="btn" onclick="window.location.href='/'">🏠 Home</button>
+  <span class="title" id="game-title">Loading...</span>
+  <div class="right">
+    <span style="color:#00a2ff;font-size:12px" id="player-count">▶ 1</span>
+    <button class="btn" onclick="toggleChat()">💬</button>
+  </div>
+</div>
+
+<div class="game-area">
+  <canvas id="game-canvas"></canvas>
+  <div class="controls-hint">WASD: Move · Space: Jump · Mouse: Look</div>
+
+  <div class="mobile-controls" id="mobile-controls">
+    <div>
+      <div class="dpad">
+        <div></div>
+        <div class="mobile-btn" ontouchstart="keys['w']=true" ontouchend="keys['w']=false">▲</div>
+        <div></div>
+        <div class="mobile-btn" ontouchstart="keys['a']=true" ontouchend="keys['a']=false">◀</div>
+        <div></div>
+        <div class="mobile-btn" ontouchstart="keys['d']=true" ontouchend="keys['d']=false">▶</div>
+      </div>
+      <div class="mobile-btn" ontouchstart="keys['s']=true" ontouchend="keys['s']=false" style="margin-top:4px">▼</div>
+    </div>
+    <div class="jump-btn" ontouchstart="keys[' ']=true" ontouchend="keys[' ']=false">JUMP</div>
+  </div>
+
+  <button class="btn chat-toggle" onclick="toggleChat()">💬</button>
+
+  <div class="chat-panel" id="chat-panel">
+    <div class="chat-header"><span>💬 Chat</span><button onclick="toggleChat()">✕</button></div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-primary" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const gameId = params.get('id');
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+
+let gameData = { objects: [], spawn: { x: 0, y: 2, z: 0 } };
+let player = { x: 0, y: 2, z: 0, vx: 0, vy: 0, vz: 0, grounded: false, w: 0.4, h: 0.9, d: 0.4 };
+const GRAVITY = -18;
+const JUMP = 8;
+const SPEED = 6;
+const FRICTION = 0.88;
+const keys = {};
+let cam = { theta: Math.PI, phi: 0.4, dist: 6, target: [0, 1, 0] };
+let ws = null;
+let currentUser = null;
+let chatOpen = false;
+
+document.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); });
+document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+document.addEventListener('mousemove', (e) => {
+  if (document.pointerLockElement === canvas) {
+    cam.theta -= e.movementX * 0.003;
+    cam.phi = Math.max(-0.5, Math.min(1.2, cam.phi + e.movementY * 0.003));
+  }
+});
+canvas.addEventListener('click', () => { if (!chatOpen) canvas.requestPointerLock(); });
+
+function resize() {
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = (window.innerHeight - 40) * devicePixelRatio;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = (window.innerHeight - 40) + 'px';
+  render();
+}
+window.addEventListener('resize', resize);
+
+function project(x, y, z) {
+  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+  const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
+  const dx = x - cam.target[0], dy = y - cam.target[1], dz = z - cam.target[2];
+  const rx = dx * ct + dz * st;
+  const ry = dy * cp - (dx * st - dz * ct) * sp;
+  const rz = dy * sp + (dx * st - dz * ct) * cp;
+  const w = canvas.width / devicePixelRatio, h = canvas.height / devicePixelRatio;
+  const fov = 700;
+  const scale = fov / (rz + cam.dist + 10);
+  return { x: w / 2 + rx * scale, y: h / 2 - ry * scale, z: rz, scale };
+}
+
+function render() {
+  const w = canvas.width, h = canvas.height;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  const sw = w / devicePixelRatio, sh = h / devicePixelRatio;
+
+  const grd = ctx.createLinearGradient(0, 0, 0, sh);
+  grd.addColorStop(0, '#1a2332');
+  grd.addColorStop(0.6, '#0d1117');
+  grd.addColorStop(1, '#111827');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, sw, sh);
+
+  // Stars
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  for (let i = 0; i < 50; i++) {
+    const sx = (Math.sin(i * 127.1) * 0.5 + 0.5) * sw;
+    const sy = (Math.cos(i * 311.7) * 0.5 + 0.5) * sh * 0.5;
+    ctx.fillRect(sx, sy, 1, 1);
+  }
+
+  // Grid
+  const gridSize = 15;
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let i = -gridSize; i <= gridSize; i++) {
+    const a = project(i, 0, -gridSize), b = project(i, 0, gridSize);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    const c = project(-gridSize, 0, i), d = project(gridSize, 0, i);
+    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.stroke();
+  }
+
+  // Collect objects + player for depth sort
+  const renderList = [];
+  gameData.objects.forEach((o, i) => {
+    const cx = o.x + (o.w||1)/2, cy = o.y + (o.h||1)/2, cz = o.z + (o.d||1)/2;
+    const p = project(cx, cy, cz);
+    renderList.push({ type: 'obj', obj: o, idx: i, depth: p.z });
+  });
+  const pp = project(player.x, player.y + player.h / 2, player.z);
+  renderList.push({ type: 'player', depth: pp.z });
+  renderList.sort((a, b) => b.depth - a.depth);
+
+  renderList.forEach(item => {
+    if (item.type === 'obj') {
+      const o = item.obj;
+      if (o.type === 'cube' || o.type === 'floor' || o.type === 'ramp') {
+        drawCube3D(o.x, o.y, o.z, o.w||1, o.h||1, o.d||1, o.color);
+      } else if (o.type === 'sphere') {
+        drawSphere3D(o.x+(o.w||1)/2, o.y+(o.h||1)/2, o.z+(o.d||1)/2, (o.w||1)/2, o.color);
+      } else if (o.type === 'cylinder') {
+        drawCylinder3D(o.x+(o.w||1)/2, o.y, o.z+(o.d||1)/2, (o.w||1)/2, o.h||1, o.color);
+      } else if (o.type === 'spawn') {
+        drawSpawn3D(o.x+(o.w||1)/2, o.y, o.z+(o.d||1)/2);
+      }
+    } else {
+      drawPlayer();
+    }
+  });
+}
+
+function drawCube3D(x, y, z, w, h, d, color) {
+  const v = [
+    project(x,y,z), project(x+w,y,z), project(x+w,y,z+d), project(x,y,z+d),
+    project(x,y+h,z), project(x+w,y+h,z), project(x+w,y+h,z+d), project(x,y+h,z+d)
+  ];
+  // Top
+  ctx.fillStyle = lighten3(color, 20);
+  ctx.beginPath(); ctx.moveTo(v[4].x,v[4].y); ctx.lineTo(v[5].x,v[5].y); ctx.lineTo(v[6].x,v[6].y); ctx.lineTo(v[7].x,v[7].y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=1; ctx.stroke();
+  // Front
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.moveTo(v[4].x,v[4].y); ctx.lineTo(v[5].x,v[5].y); ctx.lineTo(v[1].x,v[1].y); ctx.lineTo(v[0].x,v[0].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // Right
+  ctx.fillStyle = darken3(color, 20);
+  ctx.beginPath(); ctx.moveTo(v[5].x,v[5].y); ctx.lineTo(v[6].x,v[6].y); ctx.lineTo(v[2].x,v[2].y); ctx.lineTo(v[1].x,v[1].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // Left
+  ctx.fillStyle = darken3(color, 35);
+  ctx.beginPath(); ctx.moveTo(v[7].x,v[7].y); ctx.lineTo(v[4].x,v[4].y); ctx.lineTo(v[0].x,v[0].y); ctx.lineTo(v[3].x,v[3].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // Back
+  ctx.fillStyle = darken3(color, 45);
+  ctx.beginPath(); ctx.moveTo(v[6].x,v[6].y); ctx.lineTo(v[7].x,v[7].y); ctx.lineTo(v[3].x,v[3].y); ctx.lineTo(v[2].x,v[2].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+
+function drawSphere3D(cx, cy, cz, r, color) {
+  const p = project(cx, cy, cz);
+  const pr = r * p.scale * 0.8;
+  if (pr < 1) return;
+  const g = ctx.createRadialGradient(p.x-pr*0.3, p.y-pr*0.3, pr*0.1, p.x, p.y, pr);
+  g.addColorStop(0, lighten3(color, 60)); g.addColorStop(0.5, color); g.addColorStop(1, darken3(color, 40));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, pr, 0, Math.PI*2); ctx.fill();
+}
+
+function drawCylinder3D(cx, cy, cz, r, h, color) {
+  const top = project(cx, cy+h, cz), bot = project(cx, cy, cz);
+  const pr = r * top.scale * 0.8;
+  if (pr < 1) return;
+  ctx.fillStyle = darken3(color, 15);
+  ctx.beginPath(); ctx.ellipse(bot.x, bot.y, pr, pr*0.3, 0, 0, Math.PI);
+  ctx.lineTo(top.x-pr, top.y); ctx.ellipse(top.x, top.y, pr, pr*0.3, 0, Math.PI, 0, true); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.ellipse(top.x, top.y, pr, pr*0.3, 0, 0, Math.PI*2); ctx.fill();
+}
+
+function drawSpawn3D(cx, cy, cz) {
+  const p = project(cx, cy+1.2, cz);
+  const bot = project(cx, cy, cz);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+14,p.y+5); ctx.lineTo(p.x,p.y+10); ctx.closePath(); ctx.fill();
+}
+
+function drawPlayer() {
+  const px = player.x, py = player.y, pz = player.z;
+
+  // Shadow
+  const shadowP = project(px, 0.02, pz);
+  const shadowW = 0.5 * shadowP.scale * 0.5;
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath(); ctx.ellipse(shadowP.x, shadowP.y, shadowW, shadowW*0.3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Body (torso)
+  drawCube3D(px - 0.2, py + 0.3, pz - 0.15, 0.4, 0.4, 0.3, currentUser?.avatar_color || '#00a2ff');
+
+  // Head
+  const headP = project(px, py + 0.85, pz);
+  const headR = 0.25 * headP.scale * 0.7;
+  const headColor = currentUser?.avatar_color || '#00a2ff';
+  const hg = ctx.createRadialGradient(headP.x-headR*0.3, headP.y-headR*0.3, headR*0.1, headP.x, headP.y, headR);
+  hg.addColorStop(0, lighten3(headColor, 40)); hg.addColorStop(1, headColor);
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.arc(headP.x, headP.y, headR, 0, Math.PI*2); ctx.fill();
+
+  // Eyes
+  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+  const eyeOffX = -st * headR * 0.35;
+  const eyeOffZ = ct * headR * 0.35;
+  const leftEye = project(px + eyeOffX - ct*0.08, py + 0.88, pz + eyeOffZ + st*0.08);
+  const rightEye = project(px + eyeOffX + ct*0.08, py + 0.88, pz + eyeOffZ - st*0.08);
+  const eyeR = Math.max(1.5, headR * 0.2);
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(leftEye.x, leftEye.y, eyeR, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(rightEye.x, rightEye.y, eyeR, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(leftEye.x, leftEye.y, eyeR*0.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(rightEye.x, rightEye.y, eyeR*0.5, 0, Math.PI*2); ctx.fill();
+
+  // Legs
+  drawCube3D(px - 0.18, py, pz - 0.1, 0.15, 0.3, 0.2, darken3(headColor, 30));
+  drawCube3D(px + 0.03, py, pz - 0.1, 0.15, 0.3, 0.2, darken3(headColor, 30));
+}
+
+function boxOverlap(ax,ay,az,aw,ah,ad, bx,by,bz,bw,bh,bd) {
+  return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by && az < bz+bd && az+ad > bz;
+}
+
+function update(dt) {
+  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+  let moveX = 0, moveZ = 0;
+  if (keys['w'] || keys['arrowup']) { moveX -= st; moveZ -= ct; }
+  if (keys['s'] || keys['arrowdown']) { moveX += st; moveZ += ct; }
+  if (keys['a'] || keys['arrowleft']) { moveX -= ct; moveZ += st; }
+  if (keys['d'] || keys['arrowright']) { moveX += ct; moveZ -= st; }
+  const len = Math.sqrt(moveX*moveX + moveZ*moveZ);
+  if (len > 0) { moveX /= len; moveZ /= len; }
+
+  player.vx = moveX * SPEED * (keys['shift'] ? 1.8 : 1);
+  player.vz = moveZ * SPEED * (keys['shift'] ? 1.8 : 1);
+
+  if (keys[' '] && player.grounded) { player.vy = JUMP; player.grounded = false; }
+
+  player.vy += GRAVITY * dt;
+  if (player.vy < -30) player.vy = -30;
+
+  // Move X
+  player.x += player.vx * dt;
+  gameData.objects.forEach(o => {
+    if (!o.physics) return;
+    if (boxOverlap(player.x,player.y,player.z,player.w,player.h,player.d, o.x,o.y,o.z,o.w||1,o.h||1,o.d||1)) {
+      if (player.vx > 0) player.x = o.x - player.w;
+      else player.x = o.x + (o.w||1);
+      player.vx = 0;
+    }
+  });
+
+  // Move Z
+  player.z += player.vz * dt;
+  gameData.objects.forEach(o => {
+    if (!o.physics) return;
+    if (boxOverlap(player.x,player.y,player.z,player.w,player.h,player.d, o.x,o.y,o.z,o.w||1,o.h||1,o.d||1)) {
+      if (player.vz > 0) player.z = o.z - player.d;
+      else player.z = o.z + (o.d||1);
+      player.vz = 0;
+    }
+  });
+
+  // Move Y
+  player.y += player.vy * dt;
+  player.grounded = false;
+  gameData.objects.forEach(o => {
+    if (!o.physics) return;
+    if (boxOverlap(player.x,player.y,player.z,player.w,player.h,player.d, o.x,o.y,o.z,o.w||1,o.h||1,o.d||1)) {
+      if (player.vy < 0) { player.y = o.y + (o.h||1); player.grounded = true; }
+      else player.y = o.y - player.h;
+      player.vy = 0;
+    }
+  });
+
+  if (player.y < -20) {
+    player.x = gameData.spawn.x; player.y = gameData.spawn.y; player.z = gameData.spawn.z;
+    player.vx = 0; player.vy = 0; player.vz = 0;
+  }
+
+  // Camera follow
+  cam.target[0] += (player.x - cam.target[0]) * 0.1;
+  cam.target[1] += ((player.y + 0.5) - cam.target[1]) * 0.1;
+  cam.target[2] += (player.z - cam.target[2]) * 0.1;
+}
+
+let lastTime = 0;
+function gameLoop(time) {
+  const dt = Math.min((time - lastTime) / 1000, 0.05);
+  lastTime = time;
+  update(dt);
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// Chat
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-panel').classList.toggle('open', chatOpen);
+  if (chatOpen && document.pointerLockElement) document.exitPointerLock();
+  if (chatOpen) loadChatHistory();
+}
+
+async function loadChatHistory() {
+  const data = await fetch('/api/chat/history?channel=global').then(r => r.json());
+  const el = document.getElementById('chat-messages');
+  el.innerHTML = '';
+  data.messages.forEach(m => appendChatMsg({ user: m.username, avatarColor: m.avatar_color, message: m.message }));
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendChatMsg(msg) {
+  const el = document.getElementById('chat-messages');
+  el.innerHTML += `<div class="chat-msg"><div class="av" style="background:${msg.avatarColor||'#00a2ff'}">${(msg.user||'?')[0].toUpperCase()}</div><div><span class="nm">${esc(msg.user)}</span><div class="tx">${esc(msg.message)}</div></div></div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg || !ws) return;
+  ws.send(JSON.stringify({ type: 'chat', message: msg, channel: 'global' }));
+  input.value = '';
+}
+
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}`);
+  ws.onopen = () => ws.send(JSON.stringify({ type: 'auth', userId: currentUser.id, username: currentUser.username, avatarColor: currentUser.avatar_color }));
+  ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.type === 'chat') appendChatMsg(m); };
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function lighten3(hex, a) { const c = hexToRgb3(hex); return `rgb(${Math.min(255,c.r+a)},${Math.min(255,c.g+a)},${Math.min(255,c.b+a)})`; }
+function darken3(hex, a) { const c = hexToRgb3(hex); return `rgb(${Math.max(0,c.r-a)},${Math.max(0,c.g-a)},${Math.max(0,c.b-a)})`; }
+function hexToRgb3(hex) { hex = hex.replace('#',''); return { r: parseInt(hex.slice(0,2),16), g: parseInt(hex.slice(2,4),16), b: parseInt(hex.slice(4,6),16) }; }
+
+async function init() {
+  const me = await fetch('/api/me').then(r => r.json());
+  if (me.user) { currentUser = me.user; connectWS(); }
+
+  const res = await fetch(`/api/games/${gameId}`);
+  const data = await res.json();
+  if (data.game) {
+    gameData = data.game.data ? JSON.parse(data.game.data) : { objects: [], spawn: { x: 0, y: 2, z: 0 } };
+    document.getElementById('game-title').textContent = data.game.name;
+    if (!gameData.objects) gameData.objects = [];
+    if (!gameData.spawn) gameData.spawn = { x: 0, y: 2, z: 0 };
+    player.x = gameData.spawn.x; player.y = gameData.spawn.y; player.z = gameData.spawn.z;
+    cam.target = [player.x, player.y + 0.5, player.z];
+  }
+  fetch(`/api/games/${gameId}/play`, { method: 'POST' });
+
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.getElementById('mobile-controls').style.display = 'block';
+    document.querySelector('.controls-hint').style.display = 'none';
+  }
+
+  resize();
+  requestAnimationFrame(gameLoop);
+}
+
+init();
+</script>
+</body>
+</html>

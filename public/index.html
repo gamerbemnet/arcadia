@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcadia</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.paypal.com/sdk/js?client-id=AQuc6JRfxwaD51J-lYWw1r2zhvIghIBpFsMRpl_MHEzEf0q8wG0_AVnn247FSP0Whz6A6sd4hiApXCps&currency=USD"></script>
+  <script src="https://pl30148759.effectivecpmnetwork.com/82/7d/a5/827da5c391b5e89b1805b7b03a6947db.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo" onclick="scrollToTop()">A</div>
+    <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebar-toggle">◀</button>
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-item active" data-section="sec-home" onclick="scrollToSection('sec-home')">🏠<span class="tooltip">Home</span></div>
+    <div class="sidebar-item" data-section="sec-chart" onclick="scrollToSection('sec-chart')">📊<span class="tooltip">Charts</span></div>
+    <div class="sidebar-item" data-section="sec-creations" onclick="scrollToSection('sec-creations')">🎮<span class="tooltip">My Creations</span></div>
+    <div class="sidebar-item" data-section="sec-friends" onclick="scrollToSection('sec-friends')">👥<span class="tooltip">Friends</span></div>
+    <div class="sidebar-item" data-section="sec-shop" onclick="scrollToSection('sec-shop')">🛒<span class="tooltip">Shop</span></div>
+    <div class="sidebar-item" data-section="sec-avatar" onclick="scrollToSection('sec-avatar')">👤<span class="tooltip">Avatar</span></div>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-item" onclick="toggleChat()">💬<span class="tooltip">Chat</span></div>
+  </div>
+</nav>
+
+<!-- Topbar -->
+<div class="topbar" id="topbar" style="display:none">
+  <div class="topbar-search">
+    <input type="text" placeholder="Search Arcadia" id="global-search">
+  </div>
+  <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:4px;background:#f0f0f0;padding:4px 10px;border-radius:16px;font-size:13px;font-weight:700;color:#333">
+      <span>⚡</span><span id="flux-display">0</span>
+    </div>
+    <button class="topbar-icon-btn" onclick="toggleChat()" title="Chat">💬</button>
+    <button class="topbar-icon-btn" onclick="openNotifications()" title="Notifications" style="position:relative">🔔<span class="notif-badge" id="notif-badge" style="display:none">0</span></button>
+    <div class="topbar-avatar" id="user-avatar"></div>
+    <span class="topbar-username" id="user-name"></span>
+    <span class="premium-badge" id="premium-badge" style="display:none">👑</span>
+  </div>
+</div>
+
+<!-- ========== AUTH: Login ========== -->
+<div class="screen" id="screen-login" style="display:block">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="logo-big"><span>A</span></div>
+      <h2>Welcome to Arcadia</h2>
+      <p class="subtitle">Create and play games with friends</p>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="Enter username" onkeydown="if(event.key==='Enter')login()">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
+      </div>
+      <div class="error-msg" id="login-error"></div>
+      <button class="btn btn-primary btn-full" onclick="login()">Log In</button>
+      <p style="text-align:center;margin-top:16px;color:#999;font-size:14px">
+        Don't have an account? <a href="#" onclick="showScreen('register')">Sign Up</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== AUTH: Register ========== -->
+<div class="screen" id="screen-register" style="display:none">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="logo-big"><span>A</span></div>
+      <h2>Join Arcadia</h2>
+      <p class="subtitle">Create an account and start building</p>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="reg-user" placeholder="Choose a username" onkeydown="if(event.key==='Enter')register()">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="Enter email" onkeydown="if(event.key==='Enter')register()">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-pass" placeholder="6+ characters" onkeydown="if(event.key==='Enter')register()">
+      </div>
+      <div class="error-msg" id="reg-error"></div>
+      <button class="btn btn-primary btn-full" onclick="register()">Create Account</button>
+      <p style="text-align:center;margin-top:16px;color:#999;font-size:14px">
+        Already have an account? <a href="#" onclick="showScreen('login')">Log In</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MAIN APP (single scrollable page) ========== -->
+<div class="app-page" id="app-page" style="display:none">
+
+  <!-- Hero / Create Banner -->
+  <section id="sec-home">
+    <div class="hero-banner">
+      <div class="hero-content">
+        <h1>Build Your World</h1>
+        <p>Create games, play with friends, and earn Flux</p>
+        <button class="btn btn-primary btn-lg" onclick="document.getElementById('create-modal').classList.add('active')">+ Create Game</button>
+      </div>
+    </div>
+
+    <!-- Premium Banner -->
+    <div class="premium-banner" id="premium-banner" style="display:none">
+      <div class="premium-banner-content">
+        <span class="premium-icon">👑</span>
+        <div>
+          <h3>Arcadia Premium</h3>
+          <p>2x daily Flux · Exclusive items · Priority support</p>
+        </div>
+        <button class="btn btn-premium" onclick="openPremiumModal()">Subscribe</button>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🔥 Popular Games</h2>
+        <button class="btn-link" onclick="showAllGames()">See All</button>
+      </div>
+      <div class="games-row" id="home-popular"></div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🆕 Recently Updated</h2>
+      </div>
+      <div class="games-row" id="home-recent"></div>
+    </div>
+  </section>
+
+  <!-- Charts / Leaderboard -->
+  <section id="sec-chart">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🏆 Top Games</h2>
+      </div>
+      <div id="chart-games"></div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>⭐ Top Creators</h2>
+      </div>
+      <div id="chart-creators"></div>
+    </div>
+  </section>
+
+  <!-- My Creations -->
+  <section id="sec-creations">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🎮 My Creations</h2>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('create-modal').classList.add('active')">+ New Game</button>
+      </div>
+      <div class="games-row" id="my-games-list"></div>
+      <p id="no-games-msg" style="display:none;color:#999;text-align:center;padding:30px">No games yet. Create your first game!</p>
+    </div>
+  </section>
+
+  <!-- Friends -->
+  <section id="sec-friends">
+    <div class="content-section">
+      <div class="section-header"><h2>👥 Friends</h2></div>
+      <div class="friends-grid">
+        <div class="friends-panel">
+          <h3>Find Players</h3>
+          <div class="search-row">
+            <input type="text" id="friend-search" placeholder="Search username..." oninput="searchUsers()">
+          </div>
+          <div id="search-results"></div>
+        </div>
+        <div class="friends-panel">
+          <h3>Friend Requests</h3>
+          <div id="pending-list"><p style="color:#999;font-size:13px">No pending requests</p></div>
+        </div>
+        <div class="friends-panel" style="grid-column:1/-1">
+          <h3>My Friends</h3>
+          <div id="friends-list"><p style="color:#999;font-size:13px">No friends yet</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section id="sec-shop">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🛒 Shop</h2>
+        <button class="btn btn-success btn-sm" onclick="claimDaily()">🎁 Daily 50⚡</button>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="loadShopTab('hat',this)">Hats</button>
+        <button class="tab-btn" onclick="loadShopTab('accessory',this)">Accessories</button>
+        <button class="tab-btn" onclick="loadShopTab('face',this)">Faces</button>
+        <button class="tab-btn" onclick="loadShopTab('color',this)">Colors</button>
+      </div>
+      <div class="games-row" id="shop-items"></div>
+    </div>
+  </section>
+
+  <!-- Avatar -->
+  <section id="sec-avatar">
+    <div class="content-section">
+      <div class="section-header"><h2>👤 Avatar Editor</h2></div>
+      <div class="avatar-editor-grid">
+        <div class="avatar-preview-card">
+          <canvas id="avatar-preview" width="280" height="380"></canvas>
+          <button class="btn btn-primary btn-full" onclick="saveAvatar()" style="margin-top:12px">Save Avatar</button>
+        </div>
+        <div class="avatar-options">
+          <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Body Color</h3>
+            <div id="color-picker" class="color-grid"></div>
+          </div>
+          <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Face</h3>
+            <div id="face-picker" class="option-grid"></div>
+          </div>
+          <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Hat</h3>
+            <div id="hat-picker" class="option-grid"></div>
+          </div>
+          <div class="friends-panel">
+            <h3>Accessory</h3>
+            <div id="acc-picker" class="option-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Create Game Modal -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <h3>Create New Game</h3>
+    <div class="form-group">
+      <label>Game Name</label>
+      <input type="text" id="new-game-name" placeholder="My Awesome Game" onkeydown="if(event.key==='Enter')createGame()">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="new-game-desc" placeholder="Describe your game..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="document.getElementById('create-modal').classList.remove('active')">Cancel</button>
+      <button class="btn btn-primary" onclick="createGame()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Premium Modal -->
+<div class="modal-overlay" id="premium-modal">
+  <div class="modal" style="max-width:440px">
+    <div style="text-align:center;margin-bottom:16px">
+      <span style="font-size:48px">👑</span>
+      <h3 style="margin-top:8px">Arcadia Premium</h3>
+    </div>
+    <div class="premium-perks">
+      <div class="perk"><span>⚡</span> 2x daily Flux bonus (100 instead of 50)</div>
+      <div class="perk"><span>🎨</span> Exclusive premium avatar items</div>
+      <div class="perk"><span>💬</span> Premium chat badge</div>
+      <div class="perk"><span>🎮</span> Priority game hosting</div>
+      <div class="perk"><span>📦</span> 500 Flux welcome bonus</div>
+    </div>
+    <div class="premium-plans" id="premium-plans"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn" onclick="document.getElementById('premium-modal').classList.remove('active')">Maybe Later</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Panel -->
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div>
+      <h4>💬 Chat</h4>
+      <span class="online-count" id="online-count">0 online</span>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="typing-indicator" id="typing-indicator"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="btn btn-primary btn-sm" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
