@@ -614,6 +614,16 @@ app.get('/api/flux', requireAuth, async (req, res) => {
 
 app.post('/api/flux/claim-daily', requireAuth, async (req, res) => {
   const user = await db.get('SELECT flux, premium, premium_expires FROM users WHERE id = ?', req.session.userId);
+  const lastClaim = await db.get('SELECT created_at FROM transactions WHERE user_id = ? AND type = ? ORDER BY created_at DESC LIMIT 1', req.session.userId, 'daily');
+  if (lastClaim) {
+    const last = new Date(lastClaim.created_at);
+    const now = new Date();
+    const hoursSince = (now - last) / (1000 * 60 * 60);
+    if (hoursSince < 23) {
+      const hoursLeft = Math.ceil(23 - hoursSince);
+      return res.status(400).json({ error: `Daily bonus available in ${hoursLeft}h` });
+    }
+  }
   const isPremium = user.premium === 1 && user.premium_expires && new Date(user.premium_expires) > new Date();
   const bonus = isPremium ? 100 : 50;
   await addFlux(req.session.userId, bonus, isPremium ? 'Daily bonus (Premium 2x)' : 'Daily login bonus');
