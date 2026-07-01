@@ -591,6 +591,7 @@ function getObjAt(px, py) {
 }
 
 // Camera controls
+let orbitMode = false;
 canvas.addEventListener('mousedown', (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -598,15 +599,16 @@ canvas.addEventListener('mousedown', (e) => {
   dragButton = e.button;
   lastMouse = { x: e.clientX, y: e.clientY };
 
-  if (e.button === 2 || e.shiftKey) {
+  if (e.button === 1 || e.button === 2 || e.shiftKey || e.altKey) {
     isDragging = true;
+    orbitMode = true;
     return;
   }
 
   if (currentTool === 'select' || currentTool === 'move') {
     const idx = getObjAt(x, y);
-    if (idx >= 0) { selectedObj = idx; isDragging = true; }
-    else { selectedObj = null; }
+    if (idx >= 0) { selectedObj = idx; isDragging = true; orbitMode = false; }
+    else { selectedObj = null; orbitMode = true; isDragging = true; }
     updateProps();
     updateObjectList();
     render();
@@ -644,12 +646,11 @@ canvas.addEventListener('mousemove', (e) => {
   const dy = e.clientY - lastMouse.y;
   lastMouse = { x: e.clientX, y: e.clientY };
 
-  if (dragButton === 2 || e.shiftKey) {
+  if (orbitMode || dragButton === 1 || dragButton === 2 || e.shiftKey || e.altKey) {
     const sensitivity = 0.01;
-    const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
-    cam.target[0] -= dx * ct * sensitivity * cam.dist * 0.2;
-    cam.target[2] += dx * st * sensitivity * cam.dist * 0.2;
-    cam.target[1] += dy * sensitivity * cam.dist * 0.2;
+    cam.theta -= dx * sensitivity;
+    cam.phi += dy * sensitivity;
+    cam.phi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cam.phi));
     render();
     return;
   }
@@ -668,8 +669,8 @@ canvas.addEventListener('mousemove', (e) => {
   }
 });
 
-canvas.addEventListener('mouseup', () => { isDragging = false; });
-canvas.addEventListener('mouseleave', () => { isDragging = false; });
+canvas.addEventListener('mouseup', () => { isDragging = false; orbitMode = false; });
+canvas.addEventListener('mouseleave', () => { isDragging = false; orbitMode = false; });
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
 canvas.addEventListener('wheel', (e) => {

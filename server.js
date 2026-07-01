@@ -8,6 +8,7 @@ const { WebSocketServer } = require('ws');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
 const server = http.createServer(app);
@@ -123,6 +124,7 @@ try { db.exec("ALTER TABLE users ADD COLUMN premium_expires TEXT"); } catch(e) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
+  store: new SQLiteStore({ dir: DATA_DIR, db: 'sessions.db' }),
   secret: 'arcadia-secret-key-2024',
   resave: false,
   saveUninitialized: false,

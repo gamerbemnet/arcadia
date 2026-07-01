@@ -30,32 +30,26 @@
     uniform mat4 uMVP;
     uniform mat4 uModel;
     varying vec3 vNormal;
-    varying vec3 vWorldPos;
     void main() {
       gl_Position = uMVP * vec4(aPos, 1.0);
       vNormal = mat3(uModel) * aNormal;
-      vWorldPos = (uModel * vec4(aPos, 1.0)).xyz;
     }
   `;
 
   const FS_SOURCE = `
     precision mediump float;
     varying vec3 vNormal;
-    varying vec3 vWorldPos;
     uniform vec3 uColor;
     uniform vec3 uLightDir;
     void main() {
       vec3 n = normalize(vNormal);
       vec3 l = normalize(uLightDir);
-      float diff = max(dot(n, l), 0.0);
-      float ambient = 0.35;
-      float light = ambient + diff * 0.65;
-      vec3 col = uColor * light;
-      vec3 v = normalize(-vWorldPos);
-      vec3 h = normalize(l + v);
-      float spec = pow(max(dot(n, h), 0.0), 32.0) * 0.3;
-      col += vec3(spec);
-      gl_FragColor = vec4(col, 1.0);
+      float d = dot(n, l);
+      float shade;
+      if (d > 0.45) shade = 1.0;
+      else if (d > -0.1) shade = 0.78;
+      else shade = 0.58;
+      gl_FragColor = vec4(uColor * shade, 1.0);
     }
   `;
 
@@ -164,6 +158,11 @@
   function mat4RotateX(a) {
     const c = Math.cos(a), s = Math.sin(a);
     return [1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1];
+  }
+
+  function mat4RotateZ(a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return [c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1];
   }
 
   function mat4Identity() {
@@ -307,60 +306,58 @@
     parts.push({ geo: rlGeo, transform: rlT, color: currentBodyColor });
 
     // Face features (on head front)
-    // Eyes
-    const eyeL = generateBox(0.18, 0.18, 0.05);
-    const eyeLT = mat4Translate(-0.22, 1.65, 0.56);
+    // Eyes (pushed forward to avoid z-fighting with head surface at z=0.55)
+    const eyeL = generateBox(0.18, 0.18, 0.06);
+    const eyeLT = mat4Translate(-0.22, 1.65, 0.59);
     parts.push({ geo: eyeL, transform: eyeLT, color: [1,1,1], flat: true });
 
-    const eyeR = generateBox(0.18, 0.18, 0.05);
-    const eyeRT = mat4Translate(0.22, 1.65, 0.56);
+    const eyeR = generateBox(0.18, 0.18, 0.06);
+    const eyeRT = mat4Translate(0.22, 1.65, 0.59);
     parts.push({ geo: eyeR, transform: eyeRT, color: [1,1,1], flat: true });
 
     // Pupils
-    const pupL = generateBox(0.1, 0.1, 0.02);
-    const pupLT = mat4Translate(-0.22, 1.65, 0.58);
+    const pupL = generateBox(0.1, 0.1, 0.03);
+    const pupLT = mat4Translate(-0.22, 1.65, 0.63);
     parts.push({ geo: pupL, transform: pupLT, color: [0.12,0.12,0.12], flat: true });
 
-    const pupR = generateBox(0.1, 0.1, 0.02);
-    const pupRT = mat4Translate(0.22, 1.65, 0.58);
+    const pupR = generateBox(0.1, 0.1, 0.03);
+    const pupRT = mat4Translate(0.22, 1.65, 0.63);
     parts.push({ geo: pupR, transform: pupRT, color: [0.12,0.12,0.12], flat: true });
 
     // Mouth
     if (currentFace === 'smile' || currentFace === 'wink') {
-      const mouth = generateBox(0.3, 0.06, 0.02);
-      const mouthT = mat4Translate(0, 1.43, 0.56);
+      const mouth = generateBox(0.3, 0.06, 0.03);
+      const mouthT = mat4Translate(0, 1.43, 0.59);
       parts.push({ geo: mouth, transform: mouthT, color: [0.12,0.12,0.12], flat: true });
     } else if (currentFace === 'cool') {
       // Sunglasses
-      const glassL = generateBox(0.22, 0.15, 0.06);
-      const glassLT = mat4Translate(-0.22, 1.65, 0.56);
+      const glassL = generateBox(0.22, 0.15, 0.07);
+      const glassLT = mat4Translate(-0.22, 1.65, 0.59);
       parts.push({ geo: glassL, transform: glassLT, color: [0.1,0.1,0.1], flat: true });
-      const glassR = generateBox(0.22, 0.15, 0.06);
-      const glassRT = mat4Translate(0.22, 1.65, 0.56);
+      const glassR = generateBox(0.22, 0.15, 0.07);
+      const glassRT = mat4Translate(0.22, 1.65, 0.59);
       parts.push({ geo: glassR, transform: glassRT, color: [0.1,0.1,0.1], flat: true });
-      const bridge = generateBox(0.1, 0.04, 0.06);
-      const bridgeT = mat4Translate(0, 1.68, 0.56);
+      const bridge = generateBox(0.1, 0.04, 0.07);
+      const bridgeT = mat4Translate(0, 1.68, 0.59);
       parts.push({ geo: bridge, transform: bridgeT, color: [0.1,0.1,0.1], flat: true });
     } else if (currentFace === 'laugh') {
-      const mouth = generateBox(0.25, 0.12, 0.02);
-      const mouthT = mat4Translate(0, 1.42, 0.56);
+      const mouth = generateBox(0.25, 0.12, 0.03);
+      const mouthT = mat4Translate(0, 1.42, 0.59);
       parts.push({ geo: mouth, transform: mouthT, color: [0.8,0.2,0.2], flat: true });
     } else if (currentFace === 'angry') {
       // Angry eyebrows
-      const browL = generateBox(0.2, 0.05, 0.03);
-      const browLT = mat4Translate(-0.22, 1.78, 0.57);
-      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(-0.22, 1.78, 0.57), mat4RotateZ(0.3)), color: [0.12,0.12,0.12], flat: true });
-      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(0.22, 1.78, 0.57), mat4RotateZ(-0.3)), color: [0.12,0.12,0.12], flat: true });
-      const mouth = generateBox(0.18, 0.04, 0.02);
-      parts.push({ geo: mouth, transform: mat4Translate(0, 1.42, 0.56), color: [0.12,0.12,0.12], flat: true });
+      const browL = generateBox(0.2, 0.05, 0.04);
+      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(-0.22, 1.78, 0.60), mat4RotateZ(0.3)), color: [0.12,0.12,0.12], flat: true });
+      parts.push({ geo: browL, transform: mat4Mul(mat4Translate(0.22, 1.78, 0.60), mat4RotateZ(-0.3)), color: [0.12,0.12,0.12], flat: true });
+      const mouth = generateBox(0.18, 0.04, 0.03);
+      parts.push({ geo: mouth, transform: mat4Translate(0, 1.42, 0.59), color: [0.12,0.12,0.12], flat: true });
     } else if (currentFace === 'star') {
-      // Simple star: two crossed boxes
-      const starC = generateBox(0.2, 0.2, 0.02);
-      const starT = mat4Translate(0, 1.52, 0.57);
+      const starC = generateBox(0.2, 0.2, 0.03);
+      const starT = mat4Translate(0, 1.52, 0.60);
       parts.push({ geo: starC, transform: starT, color: [1,0.85,0.24], flat: true });
-      const starH = generateBox(0.35, 0.1, 0.02);
+      const starH = generateBox(0.35, 0.1, 0.03);
       parts.push({ geo: starH, transform: starT, color: [1,0.85,0.24], flat: true });
-      const starV = generateBox(0.1, 0.35, 0.02);
+      const starV = generateBox(0.1, 0.35, 0.03);
       parts.push({ geo: starV, transform: starT, color: [1,0.85,0.24], flat: true });
     }
 
@@ -506,7 +503,7 @@
       canvas.height = h;
     }
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.14, 0.14, 0.18, 1);
+    gl.clearColor(0.82, 0.88, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
@@ -517,7 +514,6 @@
 
     const parts = buildAvatarGeometry();
 
-    // Draw all lit body parts
     for (const part of parts) {
       const modelMat = mat4Mul(
         mat4Mul(mat4Translate(0, -0.4, 0), mat4Mul(mat4RotateY(rotY), mat4RotateX(rotX))),
@@ -526,14 +522,13 @@
       drawPart(modelMat, part.color, !part.flat);
     }
 
-    // Ground shadow
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.DEPTH_TEST);
     const shadowMat = mat4Mul(
       mat4Mul(mat4Translate(0, -0.98, 0), mat4Mul(mat4RotateY(rotY), mat4RotateX(rotX))),
-      mat4Scale(1.2, 0.02, 1.2)
+      mat4Scale(1.5, 0.01, 1.5)
     );
-    drawPart(shadowMat, [0.08, 0.08, 0.1], false);
+    drawPart(shadowMat, [0.65, 0.7, 0.78], false);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
@@ -664,7 +659,6 @@
     const c = document.getElementById('avatar-3d');
     if (c) {
       initCanvas('avatar-3d');
-      render();
     }
   });
 
