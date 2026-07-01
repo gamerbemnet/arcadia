@@ -80,13 +80,13 @@ async function initDB() {
         flux INTEGER DEFAULT 500,
         premium INTEGER DEFAULT 0,
         premium_expires TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS friends (
         user_id TEXT,
         friend_id TEXT,
         status TEXT DEFAULT 'pending',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (user_id, friend_id)
       );
       CREATE TABLE IF NOT EXISTS games (
@@ -100,15 +100,15 @@ async function initDB() {
         plays INTEGER DEFAULT 0,
         likes INTEGER DEFAULT 0,
         max_players INTEGER DEFAULT 12,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS chat_messages (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         channel TEXT DEFAULT 'global',
         message TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS transactions (
         id TEXT PRIMARY KEY,
@@ -116,7 +116,7 @@ async function initDB() {
         type TEXT NOT NULL,
         amount INTEGER NOT NULL,
         description TEXT DEFAULT '',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS trades (
         id TEXT PRIMARY KEY,
@@ -127,7 +127,7 @@ async function initDB() {
         from_flux INTEGER DEFAULT 0,
         to_flux INTEGER DEFAULT 0,
         status TEXT DEFAULT 'pending',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS assets (
         id TEXT PRIMARY KEY,
@@ -139,7 +139,7 @@ async function initDB() {
         preview TEXT DEFAULT '',
         downloads INTEGER DEFAULT 0,
         flux_cost INTEGER DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
   } else {
