@@ -762,8 +762,8 @@ app.post('/api/flux/buy', requireAuth, (req, res) => {
   res.json({ success: true, flux: user.flux });
 });
 
-server.listen(PORT, () => {
-  console.log(`Arcadia running at http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Arcadia running at http://0.0.0.0:${PORT}`);
 });
 
 
