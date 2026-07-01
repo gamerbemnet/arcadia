@@ -762,6 +762,11 @@ app.post('/api/flux/buy', requireAuth, (req, res) => {
   res.json({ success: true, flux: user.flux });
 });
 
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+process.on('uncaughtException', (err) => { console.error('Uncaught:', err.message); });
+process.on('unhandledRejection', (err) => { console.error('Unhandled:', err); });
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Arcadia running at http://0.0.0.0:${PORT}`);
 });
