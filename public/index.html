@@ -30,9 +30,9 @@
     <div class="sidebar-item" data-section="sec-parties" onclick="scrollToSection('sec-parties')">🎉<span class="tooltip">Parties</span><span class="sidebar-badge" id="party-badge" style="display:none"></span></div>
     <div class="sidebar-item" data-section="sec-assets" onclick="scrollToSection('sec-assets')">📦<span class="tooltip">Assets</span></div>
     <div class="sidebar-item" data-section="sec-avatar" onclick="scrollToSection('sec-avatar')">👤<span class="tooltip">Avatar</span></div>
+    <div class="sidebar-item" onclick="toggleChat()" style="position:relative">💬<span class="tooltip">Chat</span><span class="sidebar-badge" id="chat-badge" style="display:none"></span></div>
   </div>
   <div class="sidebar-bottom">
-    <div class="sidebar-item" onclick="toggleChat()">💬<span class="tooltip">Chat</span></div>
   </div>
 </nav>
 
@@ -403,7 +403,7 @@
       <div class="section-header"><h2>👤 Avatar Editor</h2></div>
       <div class="avatar-editor-grid">
         <div class="avatar-preview-card">
-          <canvas id="avatar-3d" style="width:100%;height:380px;border-radius:10px;cursor:grab"></canvas>
+          <canvas id="avatar-3d" style="width:100%;height:380px;border-radius:10px;cursor:grab;touch-action:none"></canvas>
           <canvas id="avatar-preview" width="280" height="380" style="display:none"></canvas>
           <button class="btn btn-primary btn-full" onclick="saveAvatar()" style="margin-top:12px">Save Avatar</button>
         </div>
@@ -555,6 +555,9 @@
     </div>
   </div>
 </div>
+
+<!-- Floating Chat Button (mobile) -->
+<button class="chat-floating-btn" id="chat-float-btn" onclick="toggleChat()">💬<span class="notif-dot" id="chat-notif-dot" style="display:none"></span></button>
 
 <!-- Chat Panel -->
 <div class="chat-panel" id="chat-panel">

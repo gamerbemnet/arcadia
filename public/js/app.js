@@ -131,7 +131,9 @@ function connectWS() {
 function toggleChat() {
   chatOpen = !chatOpen;
   document.getElementById('chat-panel').classList.toggle('open', chatOpen);
-  if (chatOpen) loadChatHistory();
+  const floatBtn = document.getElementById('chat-float-btn');
+  if (floatBtn) floatBtn.style.display = chatOpen ? 'none' : '';
+  if (chatOpen) { loadChatHistory(); document.getElementById('chat-notif-dot').style.display = 'none'; const badge = document.getElementById('chat-badge'); if (badge) badge.style.display = 'none'; }
 }
 
 function loadChatHistory() {
@@ -157,6 +159,12 @@ function appendChat(msg) {
       </div>
     </div>`;
   el.scrollTop = el.scrollHeight;
+  if (!chatOpen && msg.user !== currentUser) {
+    const dot = document.getElementById('chat-notif-dot');
+    if (dot) dot.style.display = 'block';
+    const badge = document.getElementById('chat-badge');
+    if (badge) { badge.style.display = 'block'; badge.textContent = '!'; }
+  }
 }
 
 function sendChat() {
