@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcadia</title>
   <link rel="stylesheet" href="/css/style.css">
-  <meta name='admaven-placement' content='BqTr9pdw8'>
-  <script src="https://grolewee.net/tag.min.js" data-cfasync="false" async></script>
+  <!-- Adsterra ads will go here -->
+  <script src="https://pl30158745.effectivecpmnetwork.com/08/a1/57/08a157b852ed3c3d61a9a02662f0fbff.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://www.paypal.com/sdk/js?client-id=AQuc6JRfxwaD51J-lYWw1r2zhvIghIBpFsMRpl_MHEzEf0q8wG0_AVnn247FSP0Whz6A6sd4hiApXCps&currency=USD"></script>
 </head>
@@ -22,8 +22,12 @@
     <div class="sidebar-item active" data-section="sec-home" onclick="scrollToSection('sec-home')">🏠<span class="tooltip">Home</span></div>
     <div class="sidebar-item" data-section="sec-chart" onclick="scrollToSection('sec-chart')">📊<span class="tooltip">Charts</span></div>
     <div class="sidebar-item" data-section="sec-creations" onclick="scrollToSection('sec-creations')">🎮<span class="tooltip">My Creations</span></div>
-    <div class="sidebar-item" data-section="sec-friends" onclick="scrollToSection('sec-friends')">👥<span class="tooltip">Friends</span></div>
+    <div class="sidebar-item" data-section="sec-friends" onclick="scrollToSection('sec-friends')">👥<span class="tooltip">Friends</span><span class="sidebar-badge" id="friends-badge" style="display:none"></span></div>
     <div class="sidebar-item" data-section="sec-shop" onclick="scrollToSection('sec-shop')">🛒<span class="tooltip">Shop</span></div>
+    <div class="sidebar-item" data-section="sec-inventory" onclick="scrollToSection('sec-inventory')">🎒<span class="tooltip">Inventory</span></div>
+    <div class="sidebar-item" data-section="sec-trading" onclick="scrollToSection('sec-trading')">🔄<span class="tooltip">Trading</span></div>
+    <div class="sidebar-item" data-section="sec-groups" onclick="scrollToSection('sec-groups')">🏛️<span class="tooltip">Groups</span></div>
+    <div class="sidebar-item" data-section="sec-parties" onclick="scrollToSection('sec-parties')">🎉<span class="tooltip">Parties</span><span class="sidebar-badge" id="party-badge" style="display:none"></span></div>
     <div class="sidebar-item" data-section="sec-assets" onclick="scrollToSection('sec-assets')">📦<span class="tooltip">Assets</span></div>
     <div class="sidebar-item" data-section="sec-avatar" onclick="scrollToSection('sec-avatar')">👤<span class="tooltip">Avatar</span></div>
   </div>
@@ -42,11 +46,29 @@
       <span>⚡</span><span id="flux-display">0</span>
     </div>
     <button class="topbar-icon-btn" onclick="toggleChat()" title="Chat">💬</button>
-    <button class="topbar-icon-btn" onclick="openNotifications()" title="Notifications" style="position:relative">🔔<span class="notif-badge" id="notif-badge" style="display:none">0</span></button>
-    <div class="topbar-avatar" id="user-avatar"></div>
-    <span class="topbar-username" id="user-name"></span>
+    <button class="topbar-icon-btn" onclick="toggleNotifications()" title="Notifications" style="position:relative">🔔<span class="notif-badge" id="notif-badge" style="display:none">0</span></button>
+    <div class="notif-dropdown" id="notif-dropdown">
+      <div class="notif-header"><h4>Notifications</h4><button class="btn-link" onclick="markAllRead()">Mark all read</button></div>
+      <div id="notif-list"></div>
+    </div>
+    <div class="topbar-avatar" id="user-avatar" onclick="openOwnProfile()" style="cursor:pointer"></div>
+    <span class="topbar-username" id="user-name" onclick="openOwnProfile()" style="cursor:pointer"></span>
     <span class="premium-badge" id="premium-badge" style="display:none">👑</span>
   </div>
+</div>
+
+<!-- Banner Ad -->
+<div style="text-align:center;padding:8px 0;background:#1a1a2e">
+  <script>
+    atOptions = {
+      'key' : 'a9ea6fff98530a969da213dae4da6ded',
+      'format' : 'iframe',
+      'height' : 60,
+      'width' : 468,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highperformanceformat.com/a9ea6fff98530a969da213dae4da6ded/invoke.js"></script>
 </div>
 
 <!-- ========== AUTH: Login ========== -->
@@ -204,6 +226,9 @@
       </div>
       <div class="tab-bar">
         <button class="tab-btn active" onclick="loadShopTab('hat',this)">Hats</button>
+        <button class="tab-btn" onclick="loadShopTab('hair',this)">Hair</button>
+        <button class="tab-btn" onclick="loadShopTab('shirt',this)">Shirts</button>
+        <button class="tab-btn" onclick="loadShopTab('pants',this)">Pants</button>
         <button class="tab-btn" onclick="loadShopTab('accessory',this)">Accessories</button>
         <button class="tab-btn" onclick="loadShopTab('face',this)">Faces</button>
         <button class="tab-btn" onclick="loadShopTab('color',this)">Colors</button>
@@ -211,6 +236,144 @@
       <div class="games-row" id="shop-items"></div>
     </div>
   </section>
+
+  <!-- Inventory -->
+  <section id="sec-inventory">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🎒 My Inventory</h2>
+        <span id="inventory-count" style="font-size:13px;color:#999"></span>
+      </div>
+      <div class="games-row" id="inventory-items"></div>
+      <p id="no-inventory-msg" style="display:none;color:#999;text-align:center;padding:30px">Your inventory is empty. Visit the shop!</p>
+    </div>
+  </section>
+
+  <!-- Trading -->
+  <section id="sec-trading">
+    <div class="content-section">
+      <div class="section-header"><h2>🔄 Trading</h2></div>
+      <div class="friends-grid">
+        <div class="friends-panel">
+          <h3>Send Trade Offer</h3>
+          <div class="form-group">
+            <label>Trade with (username)</label>
+            <input type="text" id="trade-target" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label>Your Items to Give</label>
+            <div id="trade-my-items" class="option-grid"></div>
+          </div>
+          <div class="form-group">
+            <label>Your Flux to Give</label>
+            <input type="number" id="trade-my-flux" value="0" min="0" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e3e5e7;font-size:13px">
+          </div>
+          <div class="form-group">
+            <label>Items You Want</label>
+            <div id="trade-their-items" class="option-grid"></div>
+          </div>
+          <div class="form-group">
+            <label>Flux You Want</label>
+            <input type="number" id="trade-their-flux" value="0" min="0" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e3e5e7;font-size:13px">
+          </div>
+          <button class="btn btn-primary btn-full" onclick="sendTradeOffer()">Send Trade Offer</button>
+        </div>
+        <div class="friends-panel">
+          <h3>Incoming Trades</h3>
+          <div id="trade-pending-list"><p style="color:#999;font-size:13px">No pending trades</p></div>
+        </div>
+        <div class="friends-panel" style="grid-column:1/-1">
+          <h3>Trade History</h3>
+          <div id="trade-history-list"><p style="color:#999;font-size:13px">No trade history</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Groups -->
+  <section id="sec-groups">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🏛️ Groups</h2>
+        <button class="btn btn-primary btn-sm" onclick="openCreateGroup()">+ Create Group</button>
+      </div>
+      <div class="friends-grid">
+        <div class="friends-panel">
+          <h3>My Groups</h3>
+          <div id="my-groups-list"><p style="color:#999;font-size:13px">You haven't joined any groups yet</p></div>
+        </div>
+        <div class="friends-panel">
+          <h3>Browse Groups</h3>
+          <div class="search-row" style="margin-bottom:10px">
+            <input type="text" id="group-search" placeholder="Search groups..." oninput="searchGroups()">
+          </div>
+          <div id="browse-groups-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Group Detail Modal -->
+  <div class="modal-overlay" id="group-detail-modal">
+    <div class="modal" style="max-width:520px">
+      <div id="group-detail-content"></div>
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn" onclick="document.getElementById('group-detail-modal').classList.remove('active')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div class="modal-overlay" id="create-group-modal">
+    <div class="modal" style="max-width:400px">
+      <h3>🏛️ Create Group</h3>
+      <div class="form-group">
+        <label>Group Name</label>
+        <input type="text" id="new-group-name" placeholder="My Group" maxlength="30">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="new-group-desc" placeholder="What's your group about?"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Icon (emoji)</label>
+        <input type="text" id="new-group-icon" value="🎮" maxlength="2" style="width:60px;text-align:center;font-size:24px">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn" onclick="document.getElementById('create-group-modal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-primary" onclick="createGroup()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parties -->
+  <section id="sec-parties">
+    <div class="content-section">
+      <div class="section-header">
+        <h2>🎉 Parties</h2>
+        <button class="btn btn-primary btn-sm" onclick="createParty()">+ Create Party</button>
+      </div>
+      <div class="friends-grid">
+        <div class="friends-panel" id="my-party-panel">
+          <h3>My Party</h3>
+          <div id="my-party-info"><p style="color:#999;font-size:13px">You're not in a party. Create or join one!</p></div>
+        </div>
+        <div class="friends-panel">
+          <h3>Open Parties</h3>
+          <div id="open-parties-list"><p style="color:#999;font-size:13px">No open parties</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Voice Chat Panel (floating) -->
+  <div class="voice-panel" id="voice-panel" style="display:none">
+    <div class="voice-header">
+      <span>🎤 Voice Chat</span>
+      <button class="voice-toggle-btn" id="voice-mute-btn" onclick="toggleVoiceMute()">🎤</button>
+    </div>
+    <div id="voice-members"></div>
+  </div>
 
   <!-- Assets -->
   <section id="sec-assets">
@@ -254,8 +417,20 @@
             <div id="face-picker" class="option-grid"></div>
           </div>
           <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Hair</h3>
+            <div id="hair-picker" class="option-grid"></div>
+          </div>
+          <div class="friends-panel" style="margin-bottom:12px">
             <h3>Hat</h3>
             <div id="hat-picker" class="option-grid"></div>
+          </div>
+          <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Shirt</h3>
+            <div id="shirt-picker" class="option-grid"></div>
+          </div>
+          <div class="friends-panel" style="margin-bottom:12px">
+            <h3>Pants</h3>
+            <div id="pants-picker" class="option-grid"></div>
           </div>
           <div class="friends-panel">
             <h3>Accessory</h3>
@@ -279,6 +454,21 @@
     <div class="form-group">
       <label>Description</label>
       <textarea id="new-game-desc" placeholder="Describe your game..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Genre</label>
+      <select id="new-game-genre">
+        <option value="Adventure">Adventure</option>
+        <option value="Obby">Obby</option>
+        <option value="Tycoon">Tycoon</option>
+        <option value="Simulator">Simulator</option>
+        <option value="RPG">RPG</option>
+        <option value="Horror">Horror</option>
+        <option value="Racing">Racing</option>
+        <option value="Building">Building</option>
+        <option value=" Fighting">Fighting</option>
+        <option value="Puzzle">Puzzle</option>
+      </select>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn" onclick="document.getElementById('create-modal').classList.remove('active')">Cancel</button>
@@ -336,6 +526,32 @@
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn" onclick="document.getElementById('asset-upload-modal').classList.remove('active')">Cancel</button>
       <button class="btn btn-primary" onclick="uploadAsset()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Profile Modal -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal" style="max-width:500px">
+    <div id="profile-content"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn" onclick="document.getElementById('profile-modal').classList.remove('active')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Comments Modal -->
+<div class="modal-overlay" id="comments-modal">
+  <div class="modal" style="max-width:500px">
+    <h3>💬 Comments</h3>
+    <div id="comments-list" style="max-height:300px;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="form-group">
+      <label>Add a comment</label>
+      <textarea id="comment-text" placeholder="Write something..." style="min-height:50px"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="document.getElementById('comments-modal').classList.remove('active')">Close</button>
+      <button class="btn btn-primary" onclick="postComment()">Post</button>
     </div>
   </div>
 </div>
