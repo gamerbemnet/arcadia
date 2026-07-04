@@ -568,7 +568,7 @@
 
     if (!modelReady) {
       modelReady = true;
-      loadGLB('/uploads/avatars/polytoria/source/Pauly-DS-yCzTt.glb').then(model => {
+      loadGLB('/polytoria/source/Pauly-DS-yCzTt.glb').then(model => {
         glbModel = model;
       }).catch(e => console.error('Failed to load GLB:', e));
     }
