@@ -100,6 +100,50 @@
     .bottom-content { flex: 1; overflow: hidden; position: relative; }
     .bottom-pane { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
     .bottom-pane.active { display: block; }
+    .bottom-pane.active.anim-active { display: flex; flex-direction: column; }
+
+    /* Animation Pane */
+    .anim-toolbar { display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: #2d2d2d; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
+    .anim-toolbar button { background: #3c3c3c; color: #ccc; border: 1px solid #505050; border-radius: 3px; padding: 3px 10px; font-size: 11px; cursor: pointer; font-family: inherit; }
+    .anim-toolbar button:hover { background: #505050; color: #fff; }
+    .anim-toolbar button.active { background: #00a2ff; color: #fff; border-color: #00a2ff; }
+    .anim-sep { width: 1px; height: 18px; background: #505050; }
+    .anim-toolbar label { font-size: 11px; color: #aaa; }
+    .anim-toolbar input[type="number"], .anim-toolbar input[type="text"] { width: 50px; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 2px 5px; border-radius: 3px; font-size: 11px; }
+    .anim-timeline-area { display: flex; flex: 1; overflow: hidden; }
+    .anim-track-list { width: 140px; min-width: 140px; background: #252525; border-right: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
+    .anim-track-header { height: 24px; background: #2a2a2a; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; padding: 0 8px; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .anim-track-row { height: 26px; display: flex; align-items: center; padding: 0 8px; gap: 5px; border-bottom: 1px solid #2d2d2d; font-size: 11px; color: #ccc; cursor: pointer; flex-shrink: 0; }
+    .anim-track-row:hover { background: #2d2d2d; }
+    .anim-track-row.selected { background: #264f78; color: #fff; }
+    .anim-track-row .t-icon { font-size: 9px; width: 14px; text-align: center; }
+    .anim-track-row .t-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .anim-track-row .t-color { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .anim-track-row .t-vis { font-size: 10px; cursor: pointer; opacity: 0.5; }
+    .anim-track-row .t-vis:hover { opacity: 1; }
+    .anim-track-list-footer { padding: 4px; border-top: 1px solid #1e1e1e; }
+    .anim-track-list-footer button { width: 100%; background: #3c3c3c; color: #aaa; border: 1px dashed #505050; border-radius: 3px; padding: 3px; font-size: 10px; cursor: pointer; font-family: inherit; }
+    .anim-track-list-footer button:hover { background: #505050; color: #fff; border-style: solid; }
+    .anim-scroll-area { flex: 1; overflow: auto; position: relative; }
+    .anim-ruler { height: 24px; position: sticky; top: 0; z-index: 6; background: #2a2a2a; border-bottom: 1px solid #1e1e1e; }
+    .anim-dopesheet { position: relative; min-height: calc(100% - 24px); background: #1e1e1e; background-image: repeating-linear-gradient(90deg, #262626 0px, #262626 1px, transparent 1px, transparent 60px); }
+    .anim-grid-line { position: absolute; top: 0; bottom: 0; width: 1px; background: #2a2a2a; z-index: 0; }
+    .anim-grid-line.major { background: #333; }
+    .anim-grid-row { height: 26px; border-bottom: 1px solid #262626; }
+    .anim-keyframe { position: absolute; width: 10px; height: 10px; background: #f0c040; border: 1px solid #b09030; transform: translate(-5px,-5px) rotate(45deg); cursor: pointer; z-index: 3; transition: background 0.1s; }
+    .anim-keyframe:hover { background: #ffe060; transform: translate(-5px,-5px) rotate(45deg) scale(1.2); }
+    .anim-keyframe.selected { background: #00a2ff; border-color: #007acc; }
+    .anim-keyframe-ghost { position: absolute; width: 10px; height: 10px; background: rgba(0,162,255,0.3); border: 1px dashed #00a2ff; transform: translate(-5px,-5px) rotate(45deg); z-index: 2; pointer-events: none; }
+    .anim-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4444; z-index: 8; pointer-events: none; }
+    .anim-playhead::before { content: ''; position: absolute; top: 0; left: -5px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #ff4444; }
+    .anim-scrubber { position: absolute; top: 0; left: 0; right: 0; height: 24px; z-index: 10; cursor: pointer; }
+    .anim-selection-box { position: absolute; background: rgba(0,162,255,0.1); border: 1px solid rgba(0,162,255,0.4); z-index: 1; pointer-events: none; }
+    .anim-props { width: 180px; min-width: 180px; background: #252525; border-left: 1px solid #1e1e1e; padding: 6px; overflow-y: auto; flex-shrink: 0; }
+    .anim-props h4 { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px; letter-spacing: 0.5px; }
+    .anim-props h4:first-child { margin-top: 0; }
+    .anim-prop-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+    .anim-prop-row label { font-size: 10px; color: #888; width: 50px; text-align: right; flex-shrink: 0; }
+    .anim-prop-row input, .anim-prop-row select { flex: 1; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 2px 4px; border-radius: 3px; font-size: 10px; }
     #output-log { width: 100%; height: 100%; background: #1e1e1e; color: #ccc; font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; padding: 8px; overflow-y: auto; border: none; resize: none; line-height: 1.5; }
     .output-line { padding: 1px 0; }
     .output-line .timestamp { color: #666; margin-right: 6px; }
@@ -288,6 +332,7 @@
   <div class="bottom-tabs">
     <div class="bottom-tab active" data-pane="output-pane" onclick="switchBottomTab(this)">Output</div>
     <div class="bottom-tab" data-pane="script-pane" onclick="switchBottomTab(this)">Script Editor</div>
+    <div class="bottom-tab" data-pane="animation-pane" onclick="switchBottomTab(this)">Animation</div>
   </div>
   <div class="bottom-content">
     <div class="bottom-pane active" id="output-pane">
@@ -299,10 +344,52 @@
         <textarea id="script-editor" spellcheck="false" placeholder="-- Write your script here..."></textarea>
       </div>
     </div>
+    <div class="bottom-pane" id="animation-pane">
+      <div class="anim-toolbar">
+        <button id="anim-btn-play" onclick="animTogglePlay()" title="Play/Pause">▶ Play</button>
+        <button id="anim-btn-stop" onclick="animStop()" title="Stop">⏹</button>
+        <div class="anim-sep"></div>
+        <button onclick="animStepBack()" title="Previous Frame">◀◀</button>
+        <button onclick="animStepFwd()" title="Next Frame">▶▶</button>
+        <div class="anim-sep"></div>
+        <label>Frame:</label>
+        <input type="number" id="anim-frame-input" value="0" min="0" onchange="animGoToFrame(+this.value)">
+        <div class="anim-sep"></div>
+        <label>FPS:</label>
+        <input type="number" id="anim-fps-input" value="24" min="1" max="120" onchange="animSetFps(+this.value)">
+        <div class="anim-sep"></div>
+        <label>Duration:</label>
+        <input type="number" id="anim-dur-input" value="60" min="1" max="3600" onchange="animSetDuration(+this.value)">
+        <div class="anim-sep"></div>
+        <button id="anim-btn-loop" class="active" onclick="animToggleLoop()" title="Loop">🔁 Loop</button>
+        <button onclick="animAddKeyframe()" title="Add Keyframe">+ Key</button>
+        <button onclick="animDeleteSelectedKeys()" title="Delete Selected Keys">🗑</button>
+        <div style="flex:1"></div>
+        <button onclick="animExportAnim()" title="Export Animation">💾 Export</button>
+        <button onclick="animImportAnim()" title="Import Animation">📂 Import</button>
+      </div>
+      <div class="anim-timeline-area">
+        <div class="anim-track-list">
+          <div class="anim-track-header">Tracks</div>
+          <div id="anim-track-rows"></div>
+          <div class="anim-track-list-footer">
+            <button onclick="animAddTrack()">+ Add Track</button>
+          </div>
+        </div>
+        <div class="anim-scroll-area" id="anim-scroll-area">
+          <canvas class="anim-ruler" id="anim-ruler" height="24"></canvas>
+          <div class="anim-dopesheet" id="anim-dopesheet">
+            <div class="anim-playhead" id="anim-playhead" style="left:30px"></div>
+          </div>
+        </div>
+        <div class="anim-props" id="anim-props">
+          <h4>Keyframe Properties</h4>
+          <div id="anim-props-content" style="color:#666;font-size:10px;">Select a keyframe to edit</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<!-- Status Bar -->
 <div class="status-bar">
   <div class="status-item" id="fps-display">FPS: --</div>
   <div class="status-sep"></div>
@@ -944,8 +1031,11 @@ function switchBottomTab(el) {
   document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   const pane = el.dataset.pane;
-  document.querySelectorAll('.bottom-pane').forEach(p => p.classList.remove('active'));
-  document.getElementById(pane).classList.add('active');
+  document.querySelectorAll('.bottom-pane').forEach(p => { p.classList.remove('active'); p.classList.remove('anim-active'); });
+  const paneEl = document.getElementById(pane);
+  paneEl.classList.add('active');
+  if (pane === 'animation-pane') paneEl.classList.add('anim-active');
+  if (pane === 'animation-pane') { renderAnimAll(); renderAnimTracks(); }
 }
 
 function toggleTree(id) {
@@ -1106,6 +1196,429 @@ function hexToRgb(hex) {
 
 loadGame();
 logOutput('Arcadia Studio initialized', 'info');
+
+/* ====================== ANIMATION SYSTEM ====================== */
+const Anim = {
+  tracks: [],
+  fps: 24,
+  duration: 60,
+  currentFrame: 0,
+  playing: false,
+  loop: true,
+  selectedKeys: new Set(),
+  selectedTrack: -1,
+  dragPlayhead: false,
+  dragKeyframe: null,
+  dragKeyStartFrame: 0,
+  dragKeyStartTrack: 0,
+  keyIdCounter: 0,
+  frameWidth: 10,
+  trackHeight: 26,
+  rulerHeight: 24,
+  _animFrame: null
+};
+
+const TRACK_COLORS = ['#00a2ff','#f0c040','#4ec9b0','#f44747','#c586c0','#d7ba7d','#608b4e','#9cdcfe','#ce9178','#b5cea8'];
+const TRACK_TYPES = ['Position X','Position Y','Position Z','Rotation X','Rotation Y','Rotation Z','Scale X','Scale Y','Scale Z','Color','Opacity'];
+const TRACK_PROPS = ['position.x','position.y','position.z','rotation.x','rotation.y','rotation.z','scale.x','scale.y','scale.z','color','opacity'];
+
+function animInit() {
+  addTrack('Position X', 'position.x');
+  addTrack('Position Y', 'position.y');
+  addTrack('Position Z', 'position.z');
+  addTrack('Rotation X', 'rotation.x');
+  addTrack('Rotation Y', 'rotation.y');
+  addTrack('Rotation Z', 'rotation.z');
+  renderAnimRuler();
+  renderAnimTracks();
+  renderAnimDopesheet();
+  setupAnimEvents();
+}
+
+function addTrack(name, prop) {
+  Anim.tracks.push({
+    name: name || 'Track ' + (Anim.tracks.length + 1),
+    prop: prop || '',
+    color: TRACK_COLORS[Anim.tracks.length % TRACK_COLORS.length],
+    keyframes: [],
+    visible: true
+  });
+}
+
+function animAddTrack() {
+  const idx = Anim.tracks.length;
+  const name = TRACK_TYPES[idx % TRACK_TYPES.length] || 'Track ' + (idx + 1);
+  const prop = TRACK_PROPS[idx % TRACK_PROPS.length] || '';
+  addTrack(name, prop);
+  renderAnimTracks();
+  renderAnimDopesheet();
+}
+
+function renderAnimTracks() {
+  const el = document.getElementById('anim-track-rows');
+  if (!el) return;
+  el.innerHTML = Anim.tracks.map((t, i) => `
+    <div class="anim-track-row ${i === Anim.selectedTrack ? 'selected' : ''}" onclick="animSelectTrack(${i})">
+      <span class="t-color" style="background:${t.color}"></span>
+      <span class="t-name">${t.name}</span>
+      <span class="t-vis" onclick="event.stopPropagation();animToggleVis(${i})">${t.visible ? '👁' : '🚫'}</span>
+    </div>
+  `).join('');
+}
+
+function animSelectTrack(i) {
+  Anim.selectedTrack = i;
+  renderAnimTracks();
+}
+
+function animToggleVis(i) {
+  Anim.tracks[i].visible = !Anim.tracks[i].visible;
+  renderAnimTracks();
+  renderAnimDopesheet();
+}
+
+function renderAnimRuler() {
+  const canvas = document.getElementById('anim-ruler');
+  if (!canvas) return;
+  canvas.width = Math.max(600, Anim.duration * Anim.frameWidth + 60);
+  canvas.height = Anim.rulerHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#2a2a2a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = '9px Source Sans Pro, sans-serif';
+  ctx.textAlign = 'center';
+  const fw = Anim.frameWidth;
+  for (let f = 0; f <= Anim.duration; f++) {
+    const x = f * fw + 30;
+    if (f % 10 === 0) {
+      ctx.fillStyle = '#888';
+      ctx.fillRect(x, 0, 1, Anim.rulerHeight);
+      ctx.fillText(f, x, 15);
+    } else if (f % 5 === 0) {
+      ctx.fillStyle = '#555';
+      ctx.fillRect(x, 10, 1, Anim.rulerHeight - 10);
+    } else {
+      ctx.fillStyle = '#383838';
+      ctx.fillRect(x, 16, 1, Anim.rulerHeight - 16);
+    }
+  }
+}
+
+function renderAnimDopesheet() {
+  const sheet = document.getElementById('anim-dopesheet');
+  if (!sheet) return;
+  const totalW = Math.max(600, Anim.duration * Anim.frameWidth + 60);
+  sheet.style.width = totalW + 'px';
+  sheet.style.height = (Anim.tracks.length * Anim.trackHeight) + 'px';
+  sheet.innerHTML = '';
+  for (let i = 0; i < Anim.tracks.length; i++) {
+    const row = document.createElement('div');
+    row.className = 'anim-grid-row';
+    row.style.height = Anim.trackHeight + 'px';
+    if (i === Anim.selectedTrack) row.style.background = 'rgba(0,162,255,0.05)';
+    sheet.appendChild(row);
+  }
+  Anim.tracks.forEach((track, ti) => {
+    if (!track.visible) return;
+    track.keyframes.forEach(kf => {
+      const dot = document.createElement('div');
+      dot.className = 'anim-keyframe' + (Anim.selectedKeys.has(kf.id) ? ' selected' : '');
+      dot.style.left = (kf.frame * Anim.frameWidth + 30) + 'px';
+      dot.style.top = (ti * Anim.trackHeight + Anim.trackHeight / 2) + 'px';
+      dot.style.background = track.color;
+      dot.dataset.kfId = kf.id;
+      dot.addEventListener('mousedown', e => { e.stopPropagation(); animKeyMouseDown(e, kf, ti); });
+      dot.addEventListener('dblclick', e => { e.stopPropagation(); animEditKeyProps(kf, ti); });
+      sheet.appendChild(dot);
+    });
+  });
+  const ph = document.getElementById('anim-playhead');
+  if (ph) {
+    ph.style.left = (Anim.currentFrame * Anim.frameWidth + 30) + 'px';
+    ph.style.height = (Anim.tracks.length * Anim.trackHeight + Anim.rulerHeight) + 'px';
+  }
+}
+
+function renderAnimAll() {
+  renderAnimRuler();
+  renderAnimDopesheet();
+  document.getElementById('anim-frame-input').value = Anim.currentFrame;
+}
+
+function animSetupPlayheadDrag() {
+  const ruler = document.getElementById('anim-ruler');
+  const scrollArea = document.getElementById('anim-scroll-area');
+  if (!ruler) return;
+  ruler.addEventListener('mousedown', e => {
+    Anim.dragPlayhead = true;
+    animScrubPlayhead(e);
+  });
+  document.addEventListener('mousemove', e => {
+    if (Anim.dragPlayhead) animScrubPlayhead(e);
+    if (Anim.dragKeyframe) animDragKeyframeMove(e);
+  });
+  document.addEventListener('mouseup', () => {
+    Anim.dragPlayhead = false;
+    if (Anim.dragKeyframe) {
+      Anim.dragKeyframe = null;
+      renderAnimDopesheet();
+    }
+  });
+}
+
+function animScrubPlayhead(e) {
+  const scrollArea = document.getElementById('anim-scroll-area');
+  const dopesheet = document.getElementById('anim-dopesheet');
+  if (!scrollArea || !dopesheet) return;
+  const rect = scrollArea.getBoundingClientRect();
+  const scrollX = scrollArea.scrollLeft;
+  const x = e.clientX - rect.left + scrollX - 30;
+  let frame = Math.round(x / Anim.frameWidth);
+  frame = Math.max(0, Math.min(Anim.duration, frame));
+  Anim.currentFrame = frame;
+  document.getElementById('anim-frame-input').value = frame;
+  const ph = document.getElementById('anim-playhead');
+  if (ph) ph.style.left = (frame * Anim.frameWidth + 30) + 'px';
+}
+
+function animKeyMouseDown(e, kf, trackIdx) {
+  e.preventDefault();
+  if (e.shiftKey || e.ctrlKey) {
+    if (Anim.selectedKeys.has(kf.id)) Anim.selectedKeys.delete(kf.id);
+    else Anim.selectedKeys.add(kf.id);
+  } else {
+    Anim.selectedKeys.clear();
+    Anim.selectedKeys.add(kf.id);
+  }
+  Anim.dragKeyframe = kf;
+  Anim.dragKeyStartFrame = kf.frame;
+  Anim.dragKeyStartTrack = trackIdx;
+  Anim.selectedTrack = trackIdx;
+  renderAnimTracks();
+  renderAnimDopesheet();
+  animEditKeyProps(kf, trackIdx);
+}
+
+function animDragKeyframeMove(e) {
+  const kf = Anim.dragKeyframe;
+  if (!kf) return;
+  const scrollArea = document.getElementById('anim-scroll-area');
+  const rect = scrollArea.getBoundingClientRect();
+  const scrollX = scrollArea.scrollLeft;
+  const x = e.clientX - rect.left + scrollX - 30;
+  let frame = Math.round(x / Anim.frameWidth);
+  frame = Math.max(0, Math.min(Anim.duration, frame));
+  kf.frame = frame;
+  document.getElementById('anim-frame-input').value = frame;
+  Anim.currentFrame = frame;
+  const ph = document.getElementById('anim-playhead');
+  if (ph) ph.style.left = (frame * Anim.frameWidth + 30) + 'px';
+  renderAnimDopesheet();
+}
+
+function animEditKeyProps(kf, trackIdx) {
+  const el = document.getElementById('anim-props-content');
+  if (!el) return;
+  const track = Anim.tracks[trackIdx];
+  el.innerHTML = `
+    <div class="anim-prop-row"><label>Frame:</label><input type="number" value="${kf.frame}" min="0" max="${Anim.duration}" onchange="animSetKeyProp(${kf.id},'frame',+this.value)"></div>
+    <div class="anim-prop-row"><label>Value:</label><input type="number" value="${kf.value}" step="0.1" onchange="animSetKeyProp(${kf.id},'value',+this.value)"></div>
+    <div class="anim-prop-row"><label>Easing:</label>
+      <select onchange="animSetKeyProp(${kf.id},'easing',this.value)">
+        <option value="linear" ${kf.easing==='linear'?'selected':''}>Linear</option>
+        <option value="easeIn" ${kf.easing==='easeIn'?'selected':''}>Ease In</option>
+        <option value="easeOut" ${kf.easing==='easeOut'?'selected':''}>Ease Out</option>
+        <option value="easeInOut" ${kf.easing==='easeInOut'?'selected':''}>Ease In-Out</option>
+        <option value="bounce" ${kf.easing==='bounce'?'selected':''}>Bounce</option>
+        <option value="elastic" ${kf.easing==='elastic'?'selected':''}>Elastic</option>
+        <option value="step" ${kf.easing==='step'?'selected':''}>Step</option>
+      </select>
+    </div>
+    <div class="anim-prop-row"><label>Track:</label>
+      <select onchange="animMoveKeyToTrack(${kf.id},+this.value)">
+        ${Anim.tracks.map((t,i) => `<option value="${i}" ${i===trackIdx?'selected':''}>${t.name}</option>`).join('')}
+      </select>
+    </div>
+  `;
+}
+
+function animSetKeyProp(kfId, prop, val) {
+  Anim.tracks.forEach(t => {
+    const kf = t.keyframes.find(k => k.id === kfId);
+    if (kf) {
+      if (prop === 'frame') kf.frame = Math.max(0, Math.min(Anim.duration, val));
+      else kf[prop] = val;
+    }
+  });
+  renderAnimDopesheet();
+}
+
+function animMoveKeyToTrack(kfId, newTrack) {
+  let foundKf = null;
+  let oldTrack = -1;
+  Anim.tracks.forEach((t, i) => {
+    const idx = t.keyframes.findIndex(k => k.id === kfId);
+    if (idx >= 0) {
+      foundKf = t.keyframes.splice(idx, 1)[0];
+      oldTrack = i;
+    }
+  });
+  if (foundKf && oldTrack !== newTrack) {
+    Anim.tracks[newTrack].keyframes.push(foundKf);
+    Anim.selectedTrack = newTrack;
+    renderAnimTracks();
+    renderAnimDopesheet();
+    animEditKeyProps(foundKf, newTrack);
+  }
+}
+
+function animAddKeyframe() {
+  if (Anim.selectedTrack < 0 || Anim.selectedTrack >= Anim.tracks.length) return;
+  const track = Anim.tracks[Anim.selectedTrack];
+  const existing = track.keyframes.find(k => k.frame === Anim.currentFrame);
+  if (existing) {
+    Anim.selectedKeys.clear();
+    Anim.selectedKeys.add(existing.id);
+    renderAnimDopesheet();
+    animEditKeyProps(existing, Anim.selectedTrack);
+    return;
+  }
+  const kf = { id: ++Anim.keyIdCounter, frame: Anim.currentFrame, value: 0, easing: 'linear' };
+  track.keyframes.push(kf);
+  track.keyframes.sort((a, b) => a.frame - b.frame);
+  Anim.selectedKeys.clear();
+  Anim.selectedKeys.add(kf.id);
+  renderAnimDopesheet();
+  animEditKeyProps(kf, Anim.selectedTrack);
+}
+
+function animDeleteSelectedKeys() {
+  Anim.tracks.forEach(t => {
+    t.keyframes = t.keyframes.filter(k => !Anim.selectedKeys.has(k.id));
+  });
+  Anim.selectedKeys.clear();
+  renderAnimDopesheet();
+  document.getElementById('anim-props-content').innerHTML = '<span style="color:#666;font-size:10px">Select a keyframe to edit</span>';
+}
+
+function animTogglePlay() {
+  if (Anim.playing) {
+    Anim.playing = false;
+    document.getElementById('anim-btn-play').textContent = '▶ Play';
+    document.getElementById('anim-btn-play').classList.remove('active');
+    if (Anim._animFrame) cancelAnimationFrame(Anim._animFrame);
+  } else {
+    Anim.playing = true;
+    document.getElementById('anim-btn-play').textContent = '⏸ Pause';
+    document.getElementById('anim-btn-play').classList.add('active');
+    animPlayLoop();
+  }
+}
+
+function animPlayLoop() {
+  if (!Anim.playing) return;
+  Anim.currentFrame++;
+  if (Anim.currentFrame > Anim.duration) {
+    if (Anim.loop) Anim.currentFrame = 0;
+    else { Anim.playing = false; document.getElementById('anim-btn-play').textContent = '▶ Play'; return; }
+  }
+  renderAnimAll();
+  Anim._animFrame = setTimeout(() => requestAnimationFrame(animPlayLoop), 1000 / Anim.fps);
+}
+
+function animStop() {
+  Anim.playing = false;
+  Anim.currentFrame = 0;
+  document.getElementById('anim-btn-play').textContent = '▶ Play';
+  document.getElementById('anim-btn-play').classList.remove('active');
+  if (Anim._animFrame) cancelAnimationFrame(Anim._animFrame);
+  renderAnimAll();
+}
+
+function animStepBack() {
+  Anim.currentFrame = Math.max(0, Anim.currentFrame - 1);
+  renderAnimAll();
+}
+
+function animStepFwd() {
+  Anim.currentFrame = Math.min(Anim.duration, Anim.currentFrame + 1);
+  renderAnimAll();
+}
+
+function animGoToFrame(f) {
+  Anim.currentFrame = Math.max(0, Math.min(Anim.duration, f));
+  renderAnimAll();
+}
+
+function animSetFps(f) {
+  Anim.fps = Math.max(1, Math.min(120, f));
+}
+
+function animSetDuration(d) {
+  Anim.duration = Math.max(1, Math.min(3600, d));
+  renderAnimAll();
+}
+
+function animToggleLoop() {
+  Anim.loop = !Anim.loop;
+  document.getElementById('anim-btn-loop').classList.toggle('active', Anim.loop);
+}
+
+function animExportAnim() {
+  const data = { fps: Anim.fps, duration: Anim.duration, tracks: Anim.tracks.map(t => ({ name: t.name, prop: t.prop, color: t.color, keyframes: t.keyframes })) };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'animation.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function animImportAnim() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        Anim.fps = data.fps || 24;
+        Anim.duration = data.duration || 60;
+        Anim.tracks = data.tracks || [];
+        Anim.keyIdCounter = 0;
+        Anim.tracks.forEach(t => t.keyframes.forEach(k => { if (k.id > Anim.keyIdCounter) Anim.keyIdCounter = k.id; }));
+        document.getElementById('anim-fps-input').value = Anim.fps;
+        document.getElementById('anim-dur-input').value = Anim.duration;
+        renderAnimTracks();
+        renderAnimAll();
+      } catch(err) { logOutput('Import failed: ' + err.message, 'error'); }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function setupAnimEvents() {
+  animSetupPlayheadDrag();
+  const dopesheet = document.getElementById('anim-dopesheet');
+  if (dopesheet) {
+    dopesheet.addEventListener('click', e => {
+      if (e.target === dopesheet || e.target.classList.contains('anim-grid-row')) {
+        Anim.selectedKeys.clear();
+        renderAnimDopesheet();
+        document.getElementById('anim-props-content').innerHTML = '<span style="color:#666;font-size:10px">Select a keyframe to edit</span>';
+      }
+    });
+  }
+  document.addEventListener('keydown', e => {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    if (e.key === 'Delete' || e.key === 'Backspace') animDeleteSelectedKeys();
+    if (e.key === 'ArrowLeft') { animStepBack(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { animStepFwd(); e.preventDefault(); }
+    if (e.key === ' ') { animTogglePlay(); e.preventDefault(); }
+  });
+}
+
+animInit();
 </script>
 </body>
 </html>

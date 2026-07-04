@@ -515,10 +515,10 @@
   }
 
   function onMouseDown(e) { dragging=true; lastMX=e.clientX; lastMY=e.clientY; canvas.style.cursor='grabbing'; }
-  function onMouseMove(e) { if(!dragging)return; rotY+=(e.clientX-lastMX)*0.01; rotX+=(e.clientY-lastMY)*0.01; rotX=Math.max(-1.2,Math.min(0.5,rotX)); lastMX=e.clientX; lastMY=e.clientY; }
+  function onMouseMove(e) { if(!dragging)return; rotY-=(e.clientX-lastMX)*0.01; rotX-=(e.clientY-lastMY)*0.01; rotX=Math.max(-1.2,Math.min(0.5,rotX)); lastMX=e.clientX; lastMY=e.clientY; }
   function onMouseUp() { dragging=false; canvas.style.cursor='grab'; }
   function onTouchStart(e) { if(e.touches.length===1){dragging=true;lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY;} }
-  function onTouchMove(e) { if(!dragging||e.touches.length!==1)return; e.preventDefault(); rotY+=(e.touches[0].clientX-lastMX)*0.01; rotX+=(e.touches[0].clientY-lastMY)*0.01; rotX=Math.max(-1.2,Math.min(0.5,rotX)); lastMX=e.touches[0].clientX; lastMY=e.touches[0].clientY; }
+  function onTouchMove(e) { if(!dragging||e.touches.length!==1)return; e.preventDefault(); rotY-=(e.touches[0].clientX-lastMX)*0.01; rotX-=(e.touches[0].clientY-lastMY)*0.01; rotX=Math.max(-1.2,Math.min(0.5,rotX)); lastMX=e.touches[0].clientX; lastMY=e.touches[0].clientY; }
   function onTouchEnd() { dragging=false; }
 
   function initCanvas(id) {
