@@ -4,97 +4,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcadia Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; background: #2d2d2d; font-family: 'Source Sans Pro', sans-serif; color: #ccc; font-size: 12px; user-select: none; }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    body { overflow: hidden; background: #1b1b1b; font-family: 'Source Sans Pro', sans-serif; color: #ccc; font-size: 12px; user-select: none; }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
     ::-webkit-scrollbar-track { background: #2d2d2d; }
-    ::-webkit-scrollbar-thumb { background: #3c3c3c; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #777; }
     input, select, textarea { font-family: 'Source Sans Pro', sans-serif; }
 
-    /* Menu Bar */
-    .menu-bar { display: flex; align-items: center; height: 32px; background: #3c3c3c; border-bottom: 1px solid #1e1e1e; padding: 0 4px; }
-    .menu-bar .menu-item { padding: 4px 10px; color: #ccc; cursor: pointer; font-size: 12px; border-radius: 3px; position: relative; }
-    .menu-bar .menu-item:hover { background: #505050; color: #fff; }
-    .menu-bar .menu-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-    .menu-btn { padding: 4px 14px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    /* ====== TOP RIBBON ====== */
+    .ribbon-tabs { display: flex; background: #2d2d2d; border-bottom: 1px solid #1e1e1e; height: 28px; padding: 0 4px; }
+    .ribbon-tab { padding: 4px 14px; font-size: 11px; font-weight: 600; cursor: pointer; color: #aaa; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 4px; }
+    .ribbon-tab.active { color: #fff; border-bottom-color: #00a2ff; }
+    .ribbon-tab:hover { color: #fff; }
+    .ribbon-tab-right { margin-left: auto; display: flex; align-items: center; gap: 6px; padding-right: 8px; }
+    .ribbon-tab-right .menu-btn { padding: 3px 12px; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .menu-btn.play { background: #00a2ff; color: #fff; }
     .menu-btn.play:hover { background: #0088dd; }
-    .menu-btn.save { background: #505050; color: #ccc; border: 1px solid #606060; }
-    .menu-btn.save:hover { background: #606060; color: #fff; }
-    .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #2d2d2d; border: 1px solid #505050; border-radius: 4px; min-width: 180px; z-index: 9999; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-    .dropdown .dd-item { padding: 5px 20px; color: #ccc; cursor: pointer; font-size: 12px; white-space: nowrap; }
-    .dropdown .dd-item:hover { background: #007acc; color: #fff; }
-    .dropdown .dd-sep { height: 1px; background: #505050; margin: 4px 0; }
+    .menu-btn.save { background: #3c3c3c; color: #ccc; border: 1px solid #555; }
+    .menu-btn.save:hover { background: #505050; color: #fff; }
+    .ribbon-btn-group { display: flex; align-items: center; gap: 2px; padding: 0 6px; border-right: 1px solid #3c3c3c; height: 100%; }
+    .ribbon-btn-group:last-child { border-right: none; }
+    .ribbon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 8px; border-radius: 4px; cursor: pointer; color: #bbb; font-size: 10px; gap: 1px; min-width: 44px; height: 56px; border: 1px solid transparent; }
+    .ribbon-btn:hover { background: #3c3c3c; border-color: #555; }
+    .ribbon-btn.active { background: #007acc22; border-color: #00a2ff; color: #fff; }
+    .ribbon-btn .rb-icon { font-size: 18px; }
+    .ribbon-btn .rb-label { font-size: 10px; white-space: nowrap; }
+    .ribbon-btn-wide { min-width: 56px; }
+    .ribbon-sep { width: 1px; height: 40px; background: #3c3c3c; margin: 0 2px; flex-shrink: 0; }
 
-    /* Main Layout */
-    .main-layout { display: flex; height: calc(100vh - 32px - 150px - 24px); }
+    /* ====== MAIN LAYOUT ====== */
+    .main-layout { display: flex; height: calc(100vh - 28px - 58px - 160px - 24px); }
 
-    /* Left Panel */
-    .left-panel { width: 250px; min-width: 180px; max-width: 400px; background: #252525; border-right: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
-    .panel-tabs { display: flex; background: #2d2d2d; border-bottom: 1px solid #1e1e1e; }
-    .panel-tab { flex: 1; padding: 6px 8px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; color: #aaa; border-bottom: 2px solid transparent; }
-    .panel-tab.active { color: #fff; border-bottom-color: #00a2ff; background: #2d2d2d; }
-    .panel-tab:hover { color: #fff; }
-    .panel-content { flex: 1; overflow-y: auto; overflow-x: hidden; }
-    .panel-section { padding: 8px; }
-    .panel-header { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 8px; background: #383838; border-bottom: 1px solid #1e1e1e; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-    .panel-header:hover { background: #3d3d3d; }
-    .panel-header .arrow { font-size: 8px; transition: transform 0.15s; }
-    .panel-header .arrow.open { transform: rotate(90deg); }
+    /* ====== LEFT PANEL (TOOLBOX) ====== */
+    .left-panel { width: 220px; min-width: 180px; max-width: 350px; background: #252526; border-right: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
+    .left-panel-header { padding: 6px 10px; background: #2d2d30; border-bottom: 1px solid #1e1e1e; font-size: 11px; font-weight: 700; color: #ccc; display: flex; align-items: center; gap: 6px; }
+    .left-panel-header input { flex: 1; background: #3c3c3c; border: 1px solid #555; color: #ccc; padding: 3px 8px; border-radius: 3px; font-size: 11px; outline: none; }
+    .left-panel-header input:focus { border-color: #00a2ff; }
+    .toolbox-cats { display: flex; padding: 3px 4px; gap: 2px; border-bottom: 1px solid #1e1e1e; flex-wrap: wrap; }
+    .toolbox-cat { padding: 3px 8px; border-radius: 3px; font-size: 10px; cursor: pointer; color: #aaa; background: #2d2d2d; border: 1px solid transparent; }
+    .toolbox-cat.active { background: #00a2ff; color: #fff; border-color: #00a2ff; }
+    .toolbox-cat:hover:not(.active) { background: #3c3c3c; color: #fff; }
+    .toolbox-items { flex: 1; overflow-y: auto; padding: 6px; }
+    .toolbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .toolbox-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; text-align: center; }
+    .toolbox-item:hover { background: #3c3c3c; border-color: #00a2ff; }
+    .toolbox-item .ti-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #1e1e1e; border-radius: 6px; }
+    .toolbox-item .ti-label { font-size: 9px; color: #999; }
 
-    /* Explorer Tree */
-    .tree-item { padding: 3px 8px 3px 0; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tree-item:hover { background: #3d3d3d; }
-    .tree-item.selected { background: #264f78; color: #fff; }
-    .tree-item .icon { width: 16px; text-align: center; flex-shrink: 0; }
-    .tree-item .indent { display: inline-block; }
-    .tree-children { overflow: hidden; }
+    .resize-handle { width: 4px; cursor: col-resize; background: transparent; flex-shrink: 0; }
+    .resize-handle:hover { background: #00a2ff; }
 
-    /* Toolbox */
-    .toolbox-tabs { display: flex; padding: 4px 8px; gap: 4px; border-bottom: 1px solid #1e1e1e; }
-    .toolbox-tab { padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; color: #aaa; background: #2d2d2d; border: 1px solid transparent; }
-    .toolbox-tab.active { background: #00a2ff; color: #fff; border-color: #00a2ff; }
-    .toolbox-tab:hover:not(.active) { background: #383838; color: #fff; }
-    .toolbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px; }
-    .toolbox-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
-    .toolbox-item:hover { background: #3d3d3d; border-color: #00a2ff; }
-    .toolbox-item .item-icon { font-size: 24px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: #1e1e1e; border-radius: 6px; }
-    .toolbox-item .item-label { font-size: 10px; color: #aaa; text-align: center; }
-
-    /* Right Panel */
-    .right-panel { width: 250px; min-width: 200px; max-width: 400px; background: #252525; border-left: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
-    .props-header { padding: 8px 12px; background: #383838; border-bottom: 1px solid #1e1e1e; font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
-    .props-body { flex: 1; overflow-y: auto; padding: 8px; }
-    .prop-group { margin-bottom: 8px; }
-    .prop-group-title { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 0; border-bottom: 1px solid #404040; margin-bottom: 6px; }
-    .prop-row { display: flex; align-items: center; margin-bottom: 4px; gap: 6px; }
-    .prop-row label { width: 70px; font-size: 11px; color: #aaa; text-align: right; flex-shrink: 0; }
-    .prop-row input[type="text"],
-    .prop-row input[type="number"] { flex: 1; padding: 4px 6px; background: #1e1e1e; border: 1px solid #555; border-radius: 3px; color: #fff; font-size: 11px; outline: none; }
-    .prop-row input:focus { border-color: #00a2ff; }
-    .prop-row input[type="color"] { width: 32px; height: 24px; padding: 1px; background: #1e1e1e; border: 1px solid #555; border-radius: 3px; cursor: pointer; }
-    .prop-row select { flex: 1; padding: 4px 6px; background: #1e1e1e; border: 1px solid #555; border-radius: 3px; color: #fff; font-size: 11px; outline: none; }
-    .prop-row select:focus { border-color: #00a2ff; }
-    .prop-row input[type="range"] { flex: 1; accent-color: #00a2ff; }
-    .prop-row input[type="checkbox"] { accent-color: #00a2ff; }
-    .prop-vec { display: flex; gap: 4px; flex: 1; }
-    .prop-vec input { flex: 1; width: 0; }
-    .prop-vec-label { font-size: 9px; color: #888; text-align: center; margin-top: 1px; }
-    .props-empty { color: #666; font-size: 11px; padding: 20px 8px; text-align: center; }
-
-    /* Canvas */
+    /* ====== VIEWPORT ====== */
     .viewport { flex: 1; position: relative; background: #1a1d20; overflow: hidden; }
     .viewport canvas { display: block; width: 100%; height: 100%; }
-    .cam-info { position: absolute; bottom: 8px; left: 8px; color: rgba(255,255,255,0.4); font-size: 11px; pointer-events: none; }
-    .shortcut-hint { position: absolute; top: 8px; right: 8px; color: rgba(255,255,255,0.25); font-size: 10px; pointer-events: none; text-align: right; line-height: 1.6; }
+    .cam-info { position: absolute; bottom: 8px; left: 8px; color: rgba(255,255,255,0.35); font-size: 10px; pointer-events: none; }
+    .viewport-overlay { position: absolute; top: 8px; left: 8px; display: flex; gap: 6px; }
+    .viewport-badge { background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.5); padding: 2px 8px; border-radius: 3px; font-size: 10px; pointer-events: none; }
 
-    /* Bottom Panel */
-    .bottom-panel { height: 150px; min-height: 80px; background: #252525; border-top: 1px solid #1e1e1e; display: flex; flex-direction: column; }
-    .bottom-tabs { display: flex; background: #2d2d2d; border-bottom: 1px solid #1e1e1e; }
-    .bottom-tab { padding: 5px 14px; font-size: 11px; font-weight: 600; cursor: pointer; color: #aaa; border-bottom: 2px solid transparent; }
+    /* ====== RIGHT PANEL (EXPLORER + PROPERTIES) ====== */
+    .right-panel { width: 260px; min-width: 200px; max-width: 400px; background: #252526; border-left: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
+    .right-tabs { display: flex; background: #2d2d30; border-bottom: 1px solid #1e1e1e; }
+    .right-tab { flex: 1; padding: 5px 8px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; color: #aaa; border-bottom: 2px solid transparent; }
+    .right-tab.active { color: #fff; border-bottom-color: #00a2ff; }
+    .right-tab:hover { color: #fff; }
+    .right-content { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+    .right-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .right-pane.active { display: flex; }
+
+    /* Explorer Tree */
+    .explorer-tree { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .tree-item { padding: 2px 8px 2px 0; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 22px; }
+    .tree-item:hover { background: #2a2d2e; }
+    .tree-item.selected { background: #264f78; color: #fff; }
+    .tree-item .icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 12px; }
+    .tree-item .indent { display: inline-block; }
+    .tree-children { overflow: hidden; }
+    .tree-toggle { width: 14px; text-align: center; font-size: 8px; cursor: pointer; flex-shrink: 0; color: #888; }
+    .tree-toggle:hover { color: #fff; }
+
+    /* Properties */
+    .props-header { padding: 5px 10px; background: #2d2d30; border-bottom: 1px solid #1e1e1e; font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; }
+    .props-body { flex: 1; overflow-y: auto; }
+    .prop-group { border-bottom: 1px solid #1e1e1e; }
+    .prop-group-title { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.3px; padding: 4px 10px; background: #2a2d2e; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .prop-group-title:hover { background: #333; }
+    .prop-row { display: flex; align-items: center; margin-bottom: 2px; gap: 4px; padding: 1px 10px 1px 16px; height: 24px; }
+    .prop-row:hover { background: #2a2d2e; }
+    .prop-row label { width: 65px; font-size: 11px; color: #999; text-align: right; flex-shrink: 0; }
+    .prop-row input[type="text"],
+    .prop-row input[type="number"] { flex: 1; padding: 2px 5px; background: #3c3c3c; border: 1px solid #555; border-radius: 2px; color: #fff; font-size: 11px; outline: none; height: 20px; }
+    .prop-row input:focus { border-color: #00a2ff; }
+    .prop-row input[type="color"] { width: 28px; height: 20px; padding: 1px; background: #3c3c3c; border: 1px solid #555; border-radius: 2px; cursor: pointer; }
+    .prop-row select { flex: 1; padding: 2px 4px; background: #3c3c3c; border: 1px solid #555; border-radius: 2px; color: #fff; font-size: 11px; outline: none; height: 20px; }
+    .prop-row select:focus { border-color: #00a2ff; }
+    .prop-row input[type="range"] { flex: 1; accent-color: #00a2ff; height: 4px; }
+    .prop-row input[type="checkbox"] { accent-color: #00a2ff; }
+    .prop-vec { display: flex; gap: 3px; flex: 1; }
+    .prop-vec input { flex: 1; width: 0; text-align: center; }
+    .prop-vec-label { font-size: 9px; color: #666; text-align: center; width: 16px; }
+    .props-empty { color: #666; font-size: 11px; padding: 20px; text-align: center; }
+
+    /* ====== BOTTOM PANEL ====== */
+    .bottom-panel { height: 160px; min-height: 80px; background: #252526; border-top: 1px solid #1e1e1e; display: flex; flex-direction: column; }
+    .bottom-resize { height: 4px; cursor: row-resize; background: transparent; }
+    .bottom-resize:hover { background: #00a2ff; }
+    .bottom-tabs { display: flex; background: #2d2d30; border-bottom: 1px solid #1e1e1e; height: 24px; }
+    .bottom-tab { padding: 0 14px; font-size: 11px; font-weight: 600; cursor: pointer; color: #aaa; border-bottom: 2px solid transparent; display: flex; align-items: center; }
     .bottom-tab.active { color: #fff; border-bottom-color: #00a2ff; }
     .bottom-tab:hover { color: #fff; }
     .bottom-content { flex: 1; overflow: hidden; position: relative; }
@@ -102,204 +121,241 @@
     .bottom-pane.active { display: block; }
     .bottom-pane.active.anim-active { display: flex; flex-direction: column; }
 
-    /* Animation Pane */
-    .anim-toolbar { display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: #2d2d2d; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
-    .anim-toolbar button { background: #3c3c3c; color: #ccc; border: 1px solid #505050; border-radius: 3px; padding: 3px 10px; font-size: 11px; cursor: pointer; font-family: inherit; }
-    .anim-toolbar button:hover { background: #505050; color: #fff; }
-    .anim-toolbar button.active { background: #00a2ff; color: #fff; border-color: #00a2ff; }
-    .anim-sep { width: 1px; height: 18px; background: #505050; }
-    .anim-toolbar label { font-size: 11px; color: #aaa; }
-    .anim-toolbar input[type="number"], .anim-toolbar input[type="text"] { width: 50px; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 2px 5px; border-radius: 3px; font-size: 11px; }
-    .anim-timeline-area { display: flex; flex: 1; overflow: hidden; }
-    .anim-track-list { width: 140px; min-width: 140px; background: #252525; border-right: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
-    .anim-track-header { height: 24px; background: #2a2a2a; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; padding: 0 8px; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .anim-track-row { height: 26px; display: flex; align-items: center; padding: 0 8px; gap: 5px; border-bottom: 1px solid #2d2d2d; font-size: 11px; color: #ccc; cursor: pointer; flex-shrink: 0; }
-    .anim-track-row:hover { background: #2d2d2d; }
-    .anim-track-row.selected { background: #264f78; color: #fff; }
-    .anim-track-row .t-icon { font-size: 9px; width: 14px; text-align: center; }
-    .anim-track-row .t-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .anim-track-row .t-color { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .anim-track-row .t-vis { font-size: 10px; cursor: pointer; opacity: 0.5; }
-    .anim-track-row .t-vis:hover { opacity: 1; }
-    .anim-track-list-footer { padding: 4px; border-top: 1px solid #1e1e1e; }
-    .anim-track-list-footer button { width: 100%; background: #3c3c3c; color: #aaa; border: 1px dashed #505050; border-radius: 3px; padding: 3px; font-size: 10px; cursor: pointer; font-family: inherit; }
-    .anim-track-list-footer button:hover { background: #505050; color: #fff; border-style: solid; }
-    .anim-scroll-area { flex: 1; overflow: auto; position: relative; }
-    .anim-ruler { height: 24px; position: sticky; top: 0; z-index: 6; background: #2a2a2a; border-bottom: 1px solid #1e1e1e; }
-    .anim-dopesheet { position: relative; min-height: calc(100% - 24px); background: #1e1e1e; background-image: repeating-linear-gradient(90deg, #262626 0px, #262626 1px, transparent 1px, transparent 60px); }
-    .anim-grid-line { position: absolute; top: 0; bottom: 0; width: 1px; background: #2a2a2a; z-index: 0; }
-    .anim-grid-line.major { background: #333; }
-    .anim-grid-row { height: 26px; border-bottom: 1px solid #262626; }
-    .anim-keyframe { position: absolute; width: 10px; height: 10px; background: #f0c040; border: 1px solid #b09030; transform: translate(-5px,-5px) rotate(45deg); cursor: pointer; z-index: 3; transition: background 0.1s; }
-    .anim-keyframe:hover { background: #ffe060; transform: translate(-5px,-5px) rotate(45deg) scale(1.2); }
-    .anim-keyframe.selected { background: #00a2ff; border-color: #007acc; }
-    .anim-keyframe-ghost { position: absolute; width: 10px; height: 10px; background: rgba(0,162,255,0.3); border: 1px dashed #00a2ff; transform: translate(-5px,-5px) rotate(45deg); z-index: 2; pointer-events: none; }
-    .anim-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4444; z-index: 8; pointer-events: none; }
-    .anim-playhead::before { content: ''; position: absolute; top: 0; left: -5px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #ff4444; }
-    .anim-scrubber { position: absolute; top: 0; left: 0; right: 0; height: 24px; z-index: 10; cursor: pointer; }
-    .anim-selection-box { position: absolute; background: rgba(0,162,255,0.1); border: 1px solid rgba(0,162,255,0.4); z-index: 1; pointer-events: none; }
-    .anim-props { width: 180px; min-width: 180px; background: #252525; border-left: 1px solid #1e1e1e; padding: 6px; overflow-y: auto; flex-shrink: 0; }
-    .anim-props h4 { font-size: 10px; color: #888; text-transform: uppercase; margin: 8px 0 4px; letter-spacing: 0.5px; }
-    .anim-props h4:first-child { margin-top: 0; }
-    .anim-prop-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
-    .anim-prop-row label { font-size: 10px; color: #888; width: 50px; text-align: right; flex-shrink: 0; }
-    .anim-prop-row input, .anim-prop-row select { flex: 1; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 2px 4px; border-radius: 3px; font-size: 10px; }
-    #output-log { width: 100%; height: 100%; background: #1e1e1e; color: #ccc; font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; padding: 8px; overflow-y: auto; border: none; resize: none; line-height: 1.5; }
+    /* Output */
+    #output-log { width: 100%; height: 100%; background: #1e1e1e; color: #ccc; font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; padding: 6px 10px; overflow-y: auto; border: none; line-height: 1.4; }
     .output-line { padding: 1px 0; }
-    .output-line .timestamp { color: #666; margin-right: 6px; }
+    .output-line .timestamp { color: #555; margin-right: 6px; font-size: 10px; }
     .output-line.info { color: #ccc; }
     .output-line.success { color: #4ec9b0; }
     .output-line.warn { color: #dcdcaa; }
     .output-line.error { color: #f44747; }
-    #script-editor { width: 100%; height: 100%; background: #1e1e1e; color: #d4d4d4; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; padding: 8px 8px 8px 40px; border: none; resize: none; line-height: 1.6; outline: none; tab-size: 4; }
+
+    /* Script Editor */
+    #script-editor { width: 100%; height: 100%; background: #1e1e1e; color: #d4d4d4; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; padding: 6px 6px 6px 40px; border: none; resize: none; line-height: 1.5; outline: none; tab-size: 4; }
     .script-wrap { position: relative; width: 100%; height: 100%; }
-    .line-numbers { position: absolute; left: 0; top: 0; bottom: 0; width: 36px; background: #252525; border-right: 1px solid #404040; padding: 8px 4px; color: #858585; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; line-height: 1.6; text-align: right; overflow: hidden; pointer-events: none; }
+    .line-numbers { position: absolute; left: 0; top: 0; bottom: 0; width: 36px; background: #1e1e1e; border-right: 1px solid #333; padding: 6px 4px; color: #858585; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; line-height: 1.5; text-align: right; overflow: hidden; pointer-events: none; }
 
-    /* Status Bar */
-    .status-bar { height: 24px; background: #007acc; display: flex; align-items: center; padding: 0 12px; color: #fff; font-size: 11px; gap: 16px; }
-    .status-bar .status-item { display: flex; align-items: center; gap: 4px; }
-    .status-bar .status-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.3); }
+    /* Animation Pane */
+    .anim-toolbar { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: #2d2d30; border-bottom: 1px solid #1e1e1e; flex-shrink: 0; }
+    .anim-toolbar button { background: #3c3c3c; color: #ccc; border: 1px solid #505050; border-radius: 3px; padding: 2px 8px; font-size: 10px; cursor: pointer; font-family: inherit; }
+    .anim-toolbar button:hover { background: #505050; color: #fff; }
+    .anim-toolbar button.active { background: #00a2ff; color: #fff; border-color: #00a2ff; }
+    .anim-sep { width: 1px; height: 16px; background: #505050; }
+    .anim-toolbar label { font-size: 10px; color: #888; }
+    .anim-toolbar input[type="number"] { width: 44px; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 1px 4px; border-radius: 2px; font-size: 10px; }
+    .anim-timeline-area { display: flex; flex: 1; overflow: hidden; }
+    .anim-track-list { width: 130px; min-width: 130px; background: #252526; border-right: 1px solid #1e1e1e; display: flex; flex-direction: column; flex-shrink: 0; }
+    .anim-track-header { height: 22px; background: #2a2d2e; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; padding: 0 8px; font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
+    .anim-track-row { height: 24px; display: flex; align-items: center; padding: 0 8px; gap: 4px; border-bottom: 1px solid #2d2d2d; font-size: 10px; color: #ccc; cursor: pointer; flex-shrink: 0; }
+    .anim-track-row:hover { background: #2d2d2d; }
+    .anim-track-row.selected { background: #264f78; color: #fff; }
+    .anim-track-row .t-color { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .anim-track-row .t-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .anim-track-list-footer { padding: 3px; border-top: 1px solid #1e1e1e; }
+    .anim-track-list-footer button { width: 100%; background: #3c3c3c; color: #aaa; border: 1px dashed #555; border-radius: 2px; padding: 2px; font-size: 9px; cursor: pointer; font-family: inherit; }
+    .anim-track-list-footer button:hover { background: #505050; color: #fff; border-style: solid; }
+    .anim-scroll-area { flex: 1; overflow: auto; position: relative; }
+    .anim-ruler { height: 22px; position: sticky; top: 0; z-index: 6; background: #2a2d2e; border-bottom: 1px solid #1e1e1e; }
+    .anim-dopesheet { position: relative; min-height: calc(100% - 22px); background: #1e1e1e; background-image: repeating-linear-gradient(90deg, #262626 0px, #262626 1px, transparent 1px, transparent 60px); }
+    .anim-grid-row { height: 24px; border-bottom: 1px solid #262626; }
+    .anim-keyframe { position: absolute; width: 10px; height: 10px; background: #f0c040; border: 1px solid #b09030; transform: translate(-5px,-5px) rotate(45deg); cursor: pointer; z-index: 3; }
+    .anim-keyframe:hover { background: #ffe060; }
+    .anim-keyframe.selected { background: #00a2ff; border-color: #007acc; }
+    .anim-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4444; z-index: 8; pointer-events: none; }
+    .anim-playhead::before { content: ''; position: absolute; top: 0; left: -5px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #ff4444; }
+    .anim-props { width: 170px; min-width: 170px; background: #252526; border-left: 1px solid #1e1e1e; padding: 4px; overflow-y: auto; flex-shrink: 0; }
+    .anim-props h4 { font-size: 9px; color: #888; text-transform: uppercase; margin: 6px 0 3px; letter-spacing: 0.3px; }
+    .anim-prop-row { display: flex; align-items: center; gap: 3px; margin-bottom: 3px; }
+    .anim-prop-row label { font-size: 9px; color: #888; width: 40px; text-align: right; flex-shrink: 0; }
+    .anim-prop-row input, .anim-prop-row select { flex: 1; background: #1e1e1e; border: 1px solid #505050; color: #ccc; padding: 1px 3px; border-radius: 2px; font-size: 9px; }
 
-    /* Context Menu */
-    .context-menu { display: none; position: fixed; background: #2d2d2d; border: 1px solid #505050; border-radius: 4px; min-width: 160px; z-index: 10000; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-    .context-menu .ctx-item { padding: 5px 16px; color: #ccc; cursor: pointer; font-size: 12px; }
-    .context-menu .ctx-item:hover { background: #007acc; color: #fff; }
-    .context-menu .ctx-sep { height: 1px; background: #505050; margin: 4px 0; }
+    /* ====== STATUS BAR ====== */
+    .status-bar { height: 24px; background: #007acc; display: flex; align-items: center; padding: 0 12px; color: #fff; font-size: 11px; gap: 12px; }
+    .status-item { display: flex; align-items: center; gap: 4px; }
+    .status-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.3); }
 
-    .resize-handle { width: 4px; cursor: col-resize; background: transparent; flex-shrink: 0; }
-    .resize-handle:hover { background: #00a2ff; }
-    .resize-handle-h { height: 4px; cursor: row-resize; background: transparent; flex-shrink: 0; }
-    .resize-handle-h:hover { background: #00a2ff; }
+    /* ====== CONTEXT MENU ====== */
+    .context-menu { display: none; position: fixed; background: #2d2d30; border: 1px solid #555; border-radius: 4px; min-width: 160px; z-index: 10000; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .context-menu .ctx-item { padding: 4px 16px; color: #ccc; cursor: pointer; font-size: 11px; }
+    .context-menu .ctx-item:hover { background: #094771; color: #fff; }
+    .context-menu .ctx-sep { height: 1px; background: #555; margin: 3px 0; }
+
+    /* ====== DROPDOWN ====== */
+    .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #2d2d30; border: 1px solid #555; border-radius: 4px; min-width: 180px; z-index: 9999; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .dropdown .dd-item { padding: 4px 20px; color: #ccc; cursor: pointer; font-size: 11px; white-space: nowrap; }
+    .dropdown .dd-item:hover { background: #094771; color: #fff; }
+    .dropdown .dd-sep { height: 1px; background: #555; margin: 3px 0; }
+
+    /* ====== FILE MENU (top left) ====== */
+    .file-menu { display: flex; align-items: center; background: #3c3c3c; height: 28px; padding: 0 2px; }
+    .file-menu-item { padding: 4px 10px; color: #ccc; cursor: pointer; font-size: 11px; border-radius: 3px; position: relative; }
+    .file-menu-item:hover { background: #505050; color: #fff; }
+    .file-menu-item.arcadia-logo { font-weight: 800; color: #00a2ff; font-size: 12px; margin-right: 4px; }
   </style>
 </head>
 <body>
 
-<!-- Menu Bar -->
-<div class="menu-bar">
-  <div class="menu-item" onclick="toggleDropdown('menu-file')">
-    File
-    <div class="dropdown" id="menu-file">
-      <div class="dd-item" onclick="newGame()">New</div>
-      <div class="dd-item">Open</div>
-      <div class="dd-item" onclick="saveGame()">Save</div>
-      <div class="dd-item">Save As</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item">Export</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item" onclick="window.location.href='/'">Exit</div>
+<!-- Top: File Menu + Ribbon Tabs -->
+<div style="display:flex;background:#2d2d2d;border-bottom:1px solid #1e1e1e">
+  <div class="file-menu">
+    <div class="file-menu-item arcadia-logo" onclick="window.location.href='/'">Arcadia</div>
+    <div class="file-menu-item" onclick="toggleDropdown('menu-file')">File
+      <div class="dropdown" id="menu-file">
+        <div class="dd-item" onclick="newGame()">New</div>
+        <div class="dd-item">Open from Roblox</div>
+        <div class="dd-sep"></div>
+        <div class="dd-item" onclick="saveGame()">Save to Roblox</div>
+        <div class="dd-item">Save As...</div>
+        <div class="dd-sep"></div>
+        <div class="dd-item">Publish to Arcadia</div>
+        <div class="dd-item">Export Selection</div>
+        <div class="dd-sep"></div>
+        <div class="dd-item" onclick="window.location.href='/'">Close</div>
+      </div>
+    </div>
+    <div class="file-menu-item" onclick="toggleDropdown('menu-edit')">Edit
+      <div class="dropdown" id="menu-edit">
+        <div class="dd-item">Undo <span style="float:right;color:#888">Ctrl+Z</span></div>
+        <div class="dd-item">Redo <span style="float:right;color:#888">Ctrl+Y</span></div>
+        <div class="dd-sep"></div>
+        <div class="dd-item">Cut <span style="float:right;color:#888">Ctrl+X</span></div>
+        <div class="dd-item">Copy <span style="float:right;color:#888">Ctrl+C</span></div>
+        <div class="dd-item">Paste <span style="float:right;color:#888">Ctrl+V</span></div>
+        <div class="dd-sep"></div>
+        <div class="dd-item" onclick="duplicateSelected()">Duplicate <span style="float:right;color:#888">Ctrl+D</span></div>
+        <div class="dd-item" onclick="deleteSelected()">Delete <span style="float:right;color:#888">Del</span></div>
+      </div>
+    </div>
+    <div class="file-menu-item" onclick="toggleDropdown('menu-view')">View
+      <div class="dropdown" id="menu-view">
+        <div class="dd-item">Explorer</div>
+        <div class="dd-item">Properties</div>
+        <div class="dd-item">Toolbox</div>
+        <div class="dd-item">Output</div>
+        <div class="dd-sep"></div>
+        <div class="dd-item">Zoom to Fit <span style="float:right;color:#888">F</span></div>
+        <div class="dd-item">Frame Selection <span style="float:right;color:#888">F</span></div>
+      </div>
+    </div>
+    <div class="file-menu-item" onclick="toggleDropdown('menu-help')">Help
+      <div class="dropdown" id="menu-help">
+        <div class="dd-item" onclick="alert('Arcadia Studio v2.0\nA Roblox-like game platform.\n\nBuild, script, and publish games!')">About Arcadia</div>
+        <div class="dd-item">Developer Hub</div>
+        <div class="dd-item">API Reference</div>
+      </div>
     </div>
   </div>
-  <div class="menu-item" onclick="toggleDropdown('menu-edit')">
-    Edit
-    <div class="dropdown" id="menu-edit">
-      <div class="dd-item">Undo</div>
-      <div class="dd-item">Redo</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item">Cut</div>
-      <div class="dd-item">Copy</div>
-      <div class="dd-item">Paste</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item" onclick="deleteSelected()">Delete</div>
+  <div class="ribbon-tabs" id="ribbon-tabs">
+    <div class="ribbon-tab active" data-tab="home" onclick="switchRibbonTab(this)">Home</div>
+    <div class="ribbon-tab" data-tab="model" onclick="switchRibbonTab(this)">Model</div>
+    <div class="ribbon-tab" data-tab="avatar" onclick="switchRibbonTab(this)">Avatar</div>
+    <div class="ribbon-tab" data-tab="ui" onclick="switchRibbonTab(this)">UI</div>
+    <div class="ribbon-tab" data-tab="plugins" onclick="switchRibbonTab(this)">Plugins</div>
+    <div class="ribbon-tab-right">
+      <button class="menu-btn play" onclick="testPlay()">&#9654; Play</button>
+      <button class="menu-btn save" onclick="saveGame()">&#128190; Save</button>
     </div>
   </div>
-  <div class="menu-item" onclick="toggleDropdown('menu-view')">
-    View
-    <div class="dropdown" id="menu-view">
-      <div class="dd-item">Explorer</div>
-      <div class="dd-item">Properties</div>
-      <div class="dd-item">Toolbox</div>
-      <div class="dd-item">Output</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item">Grid</div>
-      <div class="dd-item">Axes</div>
-    </div>
+</div>
+
+<!-- Ribbon Content -->
+<div id="ribbon-content" style="background:#3c3c3c;border-bottom:1px solid #1e1e1e;padding:2px 4px;display:flex;gap:2px;overflow-x:auto;height:58px">
+  <!-- Home Tab -->
+  <div class="ribbon-btn-group" id="ribbon-home">
+    <div class="ribbon-btn" data-tool="select" onclick="setTool('select')"><span class="rb-icon">↖</span><span class="rb-label">Select</span></div>
+    <div class="ribbon-btn" data-tool="move" onclick="setTool('move')"><span class="rb-icon">✥</span><span class="rb-label">Move</span></div>
+    <div class="ribbon-btn" data-tool="scale" onclick="setTool('scale')"><span class="rb-icon">⇲</span><span class="rb-label">Scale</span></div>
+    <div class="ribbon-btn" data-tool="rotate" onclick="setTool('rotate')"><span class="rb-icon">↻</span><span class="rb-label">Rotate</span></div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-btn ribbon-btn-wide" onclick="insertPart('cube')"><span class="rb-icon">📦</span><span class="rb-label">Part</span></div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-btn" onclick="insertPart('cube')"><span class="rb-icon">⬜</span><span class="rb-label">Block</span></div>
+    <div class="ribbon-btn" onclick="insertPart('sphere')"><span class="rb-icon">⚽</span><span class="rb-label">Sphere</span></div>
+    <div class="ribbon-btn" onclick="insertPart('cylinder')"><span class="rb-icon">🔵</span><span class="rb-label">Cylinder</span></div>
+    <div class="ribbon-btn" onclick="insertPart('ramp')"><span class="rb-icon">📐</span><span class="rb-label">Wedge</span></div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-btn" onclick="insertPart('spawn')"><span class="rb-icon">🏁</span><span class="rb-label">Spawn</span></div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-btn" onclick="duplicateSelected()"><span class="rb-icon">⧉</span><span class="rb-label">Duplicate</span></div>
+    <div class="ribbon-btn" onclick="deleteSelected()"><span class="rb-icon">🗑</span><span class="rb-label">Delete</span></div>
   </div>
-  <div class="menu-item" onclick="toggleDropdown('menu-insert')">
-    Insert
-    <div class="dropdown" id="menu-insert">
-      <div class="dd-item" onclick="insertPart('cube')">Part</div>
-      <div class="dd-item">Model</div>
-      <div class="dd-item">Script</div>
-      <div class="dd-sep"></div>
-      <div class="dd-item">Light</div>
-      <div class="dd-item">UI</div>
-    </div>
+  <!-- Model Tab -->
+  <div class="ribbon-btn-group" id="ribbon-model" style="display:none">
+    <div class="ribbon-btn" onclick="insertModel('house')"><span class="rb-icon">🏠</span><span class="rb-label">House</span></div>
+    <div class="ribbon-btn" onclick="insertModel('castle')"><span class="rb-icon">🏰</span><span class="rb-label">Castle</span></div>
+    <div class="ribbon-btn" onclick="insertModel('tree')"><span class="rb-icon">🌳</span><span class="rb-label">Tree</span></div>
+    <div class="ribbon-btn" onclick="insertModel('car')"><span class="rb-icon">🚗</span><span class="rb-label">Car</span></div>
+    <div class="ribbon-btn" onclick="insertModel('npc')"><span class="rb-icon">👤</span><span class="rb-label">NPC</span></div>
+    <div class="ribbon-btn" onclick="insertModel('weapon')"><span class="rb-icon">⚔</span><span class="rb-label">Weapon</span></div>
+    <div class="ribbon-sep"></div>
+    <div class="ribbon-btn" onclick="insertScript('leaderboard')"><span class="rb-icon">📊</span><span class="rb-label">Leaderboard</span></div>
+    <div class="ribbon-btn" onclick="insertScript('killbrick')"><span class="rb-icon">☠</span><span class="rb-label">KillBrick</span></div>
+    <div class="ribbon-btn" onclick="insertScript('speedpad')"><span class="rb-icon">⚡</span><span class="rb-label">SpeedPad</span></div>
+    <div class="ribbon-btn" onclick="insertScript('teleport')"><span class="rb-icon">🚀</span><span class="rb-label">Teleport</span></div>
+    <div class="ribbon-btn" onclick="insertScript('door')"><span class="rb-icon">🚪</span><span class="rb-label">Door</span></div>
+    <div class="ribbon-btn" onclick="insertScript('coin')"><span class="rb-icon">🪙</span><span class="rb-label">Coin</span></div>
   </div>
-  <div class="menu-item" onclick="toggleDropdown('menu-help')">
-    Help
-    <div class="dropdown" id="menu-help">
-      <div class="dd-item" onclick="alert('Arcadia Studio v1.0\nA Roblox-like game platform.')">About Arcadia</div>
-    </div>
+  <!-- Avatar Tab -->
+  <div class="ribbon-btn-group" id="ribbon-avatar" style="display:none">
+    <div class="ribbon-btn"><span class="rb-icon">🧑</span><span class="rb-label">Rig Builder</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🏃</span><span class="rb-label">Animate</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🎭</span><span class="rb-label">Import Avatar</span></div>
   </div>
-  <div class="menu-right">
-    <button class="menu-btn play" onclick="testPlay()">&#9654; Play</button>
-    <button class="menu-btn save" onclick="saveGame()">&#128190; Save</button>
+  <!-- UI Tab -->
+  <div class="ribbon-btn-group" id="ribbon-ui" style="display:none">
+    <div class="ribbon-btn"><span class="rb-icon">📐</span><span class="rb-label">Frame</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🔘</span><span class="rb-label">Button</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">📝</span><span class="rb-label">Text</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🖼</span><span class="rb-label">Image</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">📊</span><span class="rb-label">Scroll</span></div>
+  </div>
+  <!-- Plugins Tab -->
+  <div class="ribbon-btn-group" id="ribbon-plugins" style="display:none">
+    <div class="ribbon-btn"><span class="rb-icon">🔧</span><span class="rb-label">Build Mode</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🌊</span><span class="rb-label">Terrain</span></div>
+    <div class="ribbon-btn"><span class="rb-icon">🎨</span><span class="rb-label">Material</span></div>
   </div>
 </div>
 
 <!-- Main Layout -->
 <div class="main-layout">
-  <!-- Left Panel: Explorer + Toolbox -->
+  <!-- Left Panel: Toolbox -->
   <div class="left-panel" id="left-panel">
-    <div class="panel-tabs">
-      <div class="panel-tab active" data-panel="explorer" onclick="switchLeftTab(this)">Explorer</div>
-      <div class="panel-tab" data-panel="toolbox" onclick="switchLeftTab(this)">Toolbox</div>
+    <div class="left-panel-header">
+      <span style="font-size:13px">🧰</span> Toolbox
     </div>
-    <div class="panel-content">
-      <!-- Explorer Panel -->
-      <div id="explorer-panel">
-        <div class="panel-header" onclick="toggleTree('workspace')">
-          <span class="arrow open" id="arrow-workspace">&#9654;</span> Workspace
-        </div>
-        <div class="tree-children" id="tree-workspace">
-          <div class="tree-item" style="padding-left:16px"><span class="icon">&#128247;</span> Camera</div>
-          <div class="tree-item" style="padding-left:16px"><span class="icon">&#127757;</span> Terrain</div>
-          <div class="panel-header" onclick="toggleTree('parts')" style="padding-left:16px">
-            <span class="arrow open" id="arrow-parts">&#9654;</span> Parts
-          </div>
-          <div class="tree-children" id="tree-parts" style="padding-left:16px"></div>
-          <div class="panel-header" onclick="toggleTree('scripts')" style="padding-left:16px">
-            <span class="arrow" id="arrow-scripts">&#9654;</span> Scripts
-          </div>
-          <div class="tree-children" id="tree-scripts" style="display:none;padding-left:16px"></div>
-        </div>
+    <div class="toolbox-cats">
+      <div class="toolbox-cat active" onclick="switchToolboxCat(this,'parts')">Parts</div>
+      <div class="toolbox-cat" onclick="switchToolboxCat(this,'models')">Models</div>
+      <div class="toolbox-cat" onclick="switchToolboxCat(this,'scripts')">Scripts</div>
+      <div class="toolbox-cat" onclick="switchToolboxCat(this,'recent')">Recent</div>
+    </div>
+    <div class="toolbox-items">
+      <div id="toolbox-parts" class="toolbox-grid">
+        <div class="toolbox-item" onclick="insertPart('cube')"><div class="ti-icon">📦</div><div class="ti-label">Block</div></div>
+        <div class="toolbox-item" onclick="insertPart('sphere')"><div class="ti-icon">⚽</div><div class="ti-label">Sphere</div></div>
+        <div class="toolbox-item" onclick="insertPart('cylinder')"><div class="ti-icon">🔵</div><div class="ti-label">Cylinder</div></div>
+        <div class="toolbox-item" onclick="insertPart('ramp')"><div class="ti-icon">📐</div><div class="ti-label">Wedge</div></div>
+        <div class="toolbox-item" onclick="insertPart('spawn')"><div class="ti-icon">🏁</div><div class="ti-label">Spawn</div></div>
       </div>
-
-      <!-- Toolbox Panel -->
-      <div id="toolbox-panel" style="display:none">
-        <div class="toolbox-tabs">
-          <div class="toolbox-tab active" onclick="switchToolboxTab(this, 'parts-grid')">Parts</div>
-          <div class="toolbox-tab" onclick="switchToolboxTab(this, 'models-grid')">Models</div>
-          <div class="toolbox-tab" onclick="switchToolboxTab(this, 'scripts-grid')">Scripts</div>
-          <div class="toolbox-tab" onclick="switchToolboxTab(this, 'market-grid')">Market</div>
-        </div>
-        <div id="parts-grid" class="toolbox-grid">
-          <div class="toolbox-item" onclick="insertPart('cube')"><div class="item-icon">&#128230;</div><div class="item-label">Cube</div></div>
-          <div class="toolbox-item" onclick="insertPart('sphere')"><div class="item-icon">&#9898;</div><div class="item-label">Sphere</div></div>
-          <div class="toolbox-item" onclick="insertPart('cylinder')"><div class="item-icon">&#128309;</div><div class="item-label">Cylinder</div></div>
-          <div class="toolbox-item" onclick="insertPart('ramp')"><div class="item-icon">&#128208;</div><div class="item-label">Wedge</div></div>
-          <div class="toolbox-item" onclick="insertPart('ramp')"><div class="item-icon">&#128207;</div><div class="item-label">CornerWedge</div></div>
-          <div class="toolbox-item" onclick="insertPart('spawn')"><div class="item-icon">&#127937;</div><div class="item-label">Spawn</div></div>
-        </div>
-        <div id="models-grid" class="toolbox-grid" style="display:none">
-          <div class="toolbox-item" onclick="insertModel('castle')"><div class="item-icon">&#127984;</div><div class="item-label">Castle</div></div>
-          <div class="toolbox-item" onclick="insertModel('house')"><div class="item-icon">&#127968;</div><div class="item-label">House</div></div>
-          <div class="toolbox-item" onclick="insertModel('car')"><div class="item-icon">&#128663;</div><div class="item-label">Car</div></div>
-          <div class="toolbox-item" onclick="insertModel('tree')"><div class="item-icon">&#127794;</div><div class="item-label">Tree</div></div>
-          <div class="toolbox-item" onclick="insertModel('npc')"><div class="item-icon">&#128100;</div><div class="item-label">NPC</div></div>
-          <div class="toolbox-item" onclick="insertModel('weapon')"><div class="item-icon">&#9876;</div><div class="item-label">Weapon</div></div>
-        </div>
-        <div id="scripts-grid" class="toolbox-grid" style="display:none">
-          <div class="toolbox-item" onclick="insertScript('leaderboard')"><div class="item-icon">&#128200;</div><div class="item-label">Leaderboard</div></div>
-          <div class="toolbox-item" onclick="insertScript('killbrick')"><div class="item-icon">&#9760;</div><div class="item-label">Kill Brick</div></div>
-          <div class="toolbox-item" onclick="insertScript('speedpad')"><div class="item-icon">&#9889;</div><div class="item-label">Speed Pad</div></div>
-          <div class="toolbox-item" onclick="insertScript('teleport')"><div class="item-icon">&#128640;</div><div class="item-label">Teleport</div></div>
-          <div class="toolbox-item" onclick="insertScript('door')"><div class="item-icon">&#128682;</div><div class="item-label">Door</div></div>
-          <div class="toolbox-item" onclick="insertScript('coin')"><div class="item-icon">&#129689;</div><div class="item-label">Coin Pickup</div></div>
-        </div>
-        <div id="market-grid" class="toolbox-grid" style="display:none">
-          <div class="toolbox-item"><div class="item-icon">&#128269;</div><div class="item-label">Search...</div></div>
-        </div>
+      <div id="toolbox-models" class="toolbox-grid" style="display:none">
+        <div class="toolbox-item" onclick="insertModel('house')"><div class="ti-icon">🏠</div><div class="ti-label">House</div></div>
+        <div class="toolbox-item" onclick="insertModel('castle')"><div class="ti-icon">🏰</div><div class="ti-label">Castle</div></div>
+        <div class="toolbox-item" onclick="insertModel('car')"><div class="ti-icon">🚗</div><div class="ti-label">Car</div></div>
+        <div class="toolbox-item" onclick="insertModel('tree')"><div class="ti-icon">🌳</div><div class="ti-label">Tree</div></div>
+        <div class="toolbox-item" onclick="insertModel('npc')"><div class="ti-icon">👤</div><div class="ti-label">NPC</div></div>
+        <div class="toolbox-item" onclick="insertModel('weapon')"><div class="ti-icon">⚔</div><div class="ti-label">Weapon</div></div>
+      </div>
+      <div id="toolbox-scripts" class="toolbox-grid" style="display:none">
+        <div class="toolbox-item" onclick="insertScript('leaderboard')"><div class="ti-icon">📊</div><div class="ti-label">Leaderboard</div></div>
+        <div class="toolbox-item" onclick="insertScript('killbrick')"><div class="ti-icon">☠</div><div class="ti-label">KillBrick</div></div>
+        <div class="toolbox-item" onclick="insertScript('speedpad')"><div class="ti-icon">⚡</div><div class="ti-label">SpeedPad</div></div>
+        <div class="toolbox-item" onclick="insertScript('teleport')"><div class="ti-icon">🚀</div><div class="ti-label">Teleport</div></div>
+        <div class="toolbox-item" onclick="insertScript('door')"><div class="ti-icon">🚪</div><div class="ti-label">Door</div></div>
+        <div class="toolbox-item" onclick="insertScript('coin')"><div class="ti-icon">🪙</div><div class="ti-label">Coin</div></div>
+      </div>
+      <div id="toolbox-recent" class="toolbox-grid" style="display:none">
+        <div style="grid-column:1/-1;text-align:center;color:#666;padding:16px;font-size:10px">No recent items</div>
       </div>
     </div>
   </div>
@@ -309,23 +365,35 @@
   <!-- Viewport -->
   <div class="viewport" id="canvas-wrap">
     <canvas id="editor-canvas"></canvas>
-    <div class="cam-info" id="cam-info">Drag: Orbit &middot; Scroll: Zoom &middot; Shift+Drag: Pan</div>
-    <div class="shortcut-hint">Right-click: Pan<br>Left-click: Select/Place<br>Del: Delete selected</div>
+    <div class="viewport-overlay">
+      <div class="viewport-badge" id="game-name-badge">Untitled Game</div>
+    </div>
+    <div class="cam-info">Right-click: Pan | Left-click: Select/Place | Scroll: Zoom | Del: Delete</div>
   </div>
 
   <div class="resize-handle" id="right-resize"></div>
 
-  <!-- Right Panel: Properties -->
+  <!-- Right Panel: Explorer + Properties -->
   <div class="right-panel" id="right-panel">
-    <div class="props-header">Properties</div>
-    <div class="props-body" id="props-panel">
-      <div class="props-empty">Select an object to edit</div>
+    <div class="right-tabs">
+      <div class="right-tab active" data-pane="explorer-pane" onclick="switchRightTab(this)">Explorer</div>
+      <div class="right-tab" data-pane="properties-pane" onclick="switchRightTab(this)">Properties</div>
+    </div>
+    <div class="right-content">
+      <div class="right-pane active" id="explorer-pane">
+        <div class="explorer-tree" id="explorer-tree"></div>
+      </div>
+      <div class="right-pane" id="properties-pane">
+        <div class="props-body" id="props-panel">
+          <div class="props-empty">Select an object to edit</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Bottom Panel Resize Handle -->
-<div class="resize-handle-h" id="bottom-resize"></div>
+<!-- Bottom Panel Resize -->
+<div class="bottom-resize" id="bottom-resize"></div>
 
 <!-- Bottom Panel -->
 <div class="bottom-panel" id="bottom-panel">
@@ -361,12 +429,12 @@
         <label>Duration:</label>
         <input type="number" id="anim-dur-input" value="60" min="1" max="3600" onchange="animSetDuration(+this.value)">
         <div class="anim-sep"></div>
-        <button id="anim-btn-loop" class="active" onclick="animToggleLoop()" title="Loop">🔁 Loop</button>
-        <button onclick="animAddKeyframe()" title="Add Keyframe">+ Key</button>
-        <button onclick="animDeleteSelectedKeys()" title="Delete Selected Keys">🗑</button>
+        <button id="anim-btn-loop" class="active" onclick="animToggleLoop()">Loop</button>
+        <button onclick="animAddKeyframe()">+ Key</button>
+        <button onclick="animDeleteSelectedKeys()">Del</button>
         <div style="flex:1"></div>
-        <button onclick="animExportAnim()" title="Export Animation">💾 Export</button>
-        <button onclick="animImportAnim()" title="Import Animation">📂 Import</button>
+        <button onclick="animExportAnim()">Export</button>
+        <button onclick="animImportAnim()">Import</button>
       </div>
       <div class="anim-timeline-area">
         <div class="anim-track-list">
@@ -377,19 +445,21 @@
           </div>
         </div>
         <div class="anim-scroll-area" id="anim-scroll-area">
-          <canvas class="anim-ruler" id="anim-ruler" height="24"></canvas>
+          <canvas class="anim-ruler" id="anim-ruler" height="22"></canvas>
           <div class="anim-dopesheet" id="anim-dopesheet">
             <div class="anim-playhead" id="anim-playhead" style="left:30px"></div>
           </div>
         </div>
         <div class="anim-props" id="anim-props">
           <h4>Keyframe Properties</h4>
-          <div id="anim-props-content" style="color:#666;font-size:10px;">Select a keyframe to edit</div>
+          <div id="anim-props-content" style="color:#666;font-size:9px;">Select a keyframe</div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Status Bar -->
 <div class="status-bar">
   <div class="status-item" id="fps-display">FPS: --</div>
   <div class="status-sep"></div>
@@ -397,7 +467,9 @@
   <div class="status-sep"></div>
   <div class="status-item" id="objects-display">Objects: 0</div>
   <div class="status-sep"></div>
-  <div class="status-item" id="save-status-bar" style="margin-left:auto">&#9679; Saved</div>
+  <div class="status-item" id="grid-display">Grid: 1</div>
+  <div class="status-sep"></div>
+  <div class="status-item" style="margin-left:auto" id="save-status-bar">&#9679; Saved</div>
 </div>
 
 <!-- Context Menu -->
@@ -420,10 +492,8 @@ let dirty = false;
 let autoSaveTimer = null;
 let outputLines = [];
 
-// 3D Engine
 const canvas = document.getElementById('editor-canvas');
 const ctx = canvas.getContext('2d');
-
 let cam = { theta: Math.PI / 4, phi: Math.PI / 5, dist: 18, target: [0, 0, 0] };
 let isDragging = false;
 let dragButton = 0;
@@ -458,7 +528,6 @@ function unproject(px, py, groundY) {
   const h = canvas.height / devicePixelRatio;
   const ndcX = (px - w / 2) / (w / 2);
   const ndcY = -(py - h / 2) / (h / 2);
-  const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
   const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
   const dir = [ndcX, ndcY * cp + sp, ndcY * sp - cp];
   const camPos = [
@@ -475,7 +544,6 @@ function unproject(px, py, groundY) {
 function render() {
   const w = canvas.width, h = canvas.height;
   ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-
   const grd = ctx.createLinearGradient(0, 0, 0, h / devicePixelRatio);
   grd.addColorStop(0, '#1a2332');
   grd.addColorStop(1, '#0d1117');
@@ -483,22 +551,17 @@ function render() {
   ctx.fillRect(0, 0, w / devicePixelRatio, h / devicePixelRatio);
 
   const gridSize = 20;
-  const gridStep = 1;
   ctx.strokeStyle = 'rgba(255,255,255,0.06)';
   ctx.lineWidth = 1;
-  for (let i = -gridSize; i <= gridSize; i += gridStep) {
-    const a = project(i, 0, -gridSize);
-    const b = project(i, 0, gridSize);
+  for (let i = -gridSize; i <= gridSize; i++) {
+    const a = project(i, 0, -gridSize), b = project(i, 0, gridSize);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-    const c = project(-gridSize, 0, i);
-    const d = project(gridSize, 0, i);
+    const c = project(-gridSize, 0, i), d = project(gridSize, 0, i);
     ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.stroke();
   }
 
   const origin = project(0, 0, 0);
-  const xEnd = project(3, 0, 0);
-  const yEnd = project(0, 3, 0);
-  const zEnd = project(0, 0, 3);
+  const xEnd = project(3, 0, 0), yEnd = project(0, 3, 0), zEnd = project(0, 0, 3);
   ctx.lineWidth = 2;
   ctx.strokeStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xEnd.x, xEnd.y); ctx.stroke();
   ctx.strokeStyle = '#2ecc71'; ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yEnd.x, yEnd.y); ctx.stroke();
@@ -511,279 +574,140 @@ function render() {
 
   sorted.forEach(({ obj: o, idx }) => {
     const isSelected = selectedObj === idx;
-    const cx = o.x + (o.w || 1) / 2;
-    const cy = o.y + (o.h || 1) / 2;
-    const cz = o.z + (o.d || 1) / 2;
-
-    if (o.type === 'cube' || o.type === 'floor' || o.type === 'ramp') {
-      drawCube(o.x, o.y, o.z, o.w || 1, o.h || 1, o.d || 1, o.color, isSelected);
-    } else if (o.type === 'sphere') {
-      drawSphere(cx, cy, cz, (o.w || 1) / 2, o.color, isSelected);
-    } else if (o.type === 'cylinder') {
-      drawCylinder(cx, cy, cz, (o.w || 1) / 2, o.h || 1, o.color, isSelected);
-    } else if (o.type === 'spawn') {
-      drawSpawn(cx, cy, cz, isSelected);
-    }
-
+    const cx = o.x + (o.w || 1) / 2, cy = o.y + (o.h || 1) / 2, cz = o.z + (o.d || 1) / 2;
+    if (o.type === 'cube' || o.type === 'floor' || o.type === 'ramp') drawCube(o.x, o.y, o.z, o.w || 1, o.h || 1, o.d || 1, o.color, isSelected);
+    else if (o.type === 'sphere') drawSphere(cx, cy, cz, (o.w || 1) / 2, o.color, isSelected);
+    else if (o.type === 'cylinder') drawCylinder(cx, cy, cz, (o.w || 1) / 2, o.h || 1, o.color, isSelected);
+    else if (o.type === 'spawn') drawSpawn(cx, cy, cz, isSelected);
     if (isSelected) {
-      const hh = (o.h || 1) / 2;
-      const selP = project(cx, hh + 0.3, cz);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 11px Source Sans Pro';
-      ctx.textAlign = 'center';
+      const selP = project(cx, (o.h || 1) / 2 + 0.3, cz);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Source Sans Pro'; ctx.textAlign = 'center';
       ctx.fillText(o.label || o.type, selP.x, selP.y - 6);
     }
   });
-
   document.getElementById('objects-display').textContent = 'Objects: ' + gameData.objects.length;
 }
 
 function drawCube(x, y, z, w, h, d, color, selected) {
   const v = [
-    project(x, y, z), project(x + w, y, z), project(x + w, y, z + d), project(x, y, z + d),
-    project(x, y + h, z), project(x + w, y + h, z), project(x + w, y + h, z + d), project(x, y + h, z + d)
+    project(x,y,z), project(x+w,y,z), project(x+w,y,z+d), project(x,y,z+d),
+    project(x,y+h,z), project(x+w,y+h,z), project(x+w,y+h,z+d), project(x,y+h,z+d)
   ];
-
-  ctx.fillStyle = lighten(color, 20);
-  ctx.beginPath();
-  ctx.moveTo(v[4].x, v[4].y); ctx.lineTo(v[5].x, v[5].y);
-  ctx.lineTo(v[6].x, v[6].y); ctx.lineTo(v[7].x, v[7].y);
-  ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
-  ctx.lineWidth = selected ? 2 : 1;
-  ctx.stroke();
-
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(v[4].x, v[4].y); ctx.lineTo(v[5].x, v[5].y);
-  ctx.lineTo(v[1].x, v[1].y); ctx.lineTo(v[0].x, v[0].y);
-  ctx.closePath(); ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = darken(color, 20);
-  ctx.beginPath();
-  ctx.moveTo(v[5].x, v[5].y); ctx.lineTo(v[6].x, v[6].y);
-  ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[1].x, v[1].y);
-  ctx.closePath(); ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = darken(color, 35);
-  ctx.beginPath();
-  ctx.moveTo(v[7].x, v[7].y); ctx.lineTo(v[4].x, v[4].y);
-  ctx.lineTo(v[0].x, v[0].y); ctx.lineTo(v[3].x, v[3].y);
-  ctx.closePath(); ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = darken(color, 45);
-  ctx.beginPath();
-  ctx.moveTo(v[6].x, v[6].y); ctx.lineTo(v[7].x, v[7].y);
-  ctx.lineTo(v[3].x, v[3].y); ctx.lineTo(v[2].x, v[2].y);
-  ctx.closePath(); ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = darken(color, 50);
-  ctx.beginPath();
-  ctx.moveTo(v[0].x, v[0].y); ctx.lineTo(v[1].x, v[1].y);
-  ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[3].x, v[3].y);
-  ctx.closePath(); ctx.fill();
-  ctx.stroke();
+  ctx.fillStyle = lighten(color,20); ctx.beginPath(); ctx.moveTo(v[4].x,v[4].y); ctx.lineTo(v[5].x,v[5].y); ctx.lineTo(v[6].x,v[6].y); ctx.lineTo(v[7].x,v[7].y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = selected?'#fff':'rgba(0,0,0,0.2)'; ctx.lineWidth = selected?2:1; ctx.stroke();
+  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(v[4].x,v[4].y); ctx.lineTo(v[5].x,v[5].y); ctx.lineTo(v[1].x,v[1].y); ctx.lineTo(v[0].x,v[0].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = darken(color,20); ctx.beginPath(); ctx.moveTo(v[5].x,v[5].y); ctx.lineTo(v[6].x,v[6].y); ctx.lineTo(v[2].x,v[2].y); ctx.lineTo(v[1].x,v[1].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = darken(color,35); ctx.beginPath(); ctx.moveTo(v[7].x,v[7].y); ctx.lineTo(v[4].x,v[4].y); ctx.lineTo(v[0].x,v[0].y); ctx.lineTo(v[3].x,v[3].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = darken(color,45); ctx.beginPath(); ctx.moveTo(v[6].x,v[6].y); ctx.lineTo(v[7].x,v[7].y); ctx.lineTo(v[3].x,v[3].y); ctx.lineTo(v[2].x,v[2].y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = darken(color,50); ctx.beginPath(); ctx.moveTo(v[0].x,v[0].y); ctx.lineTo(v[1].x,v[1].y); ctx.lineTo(v[2].x,v[2].y); ctx.lineTo(v[3].x,v[3].y); ctx.closePath(); ctx.fill(); ctx.stroke();
 }
 
 function drawSphere(cx, cy, cz, r, color, selected) {
-  const p = project(cx, cy, cz);
-  const scale = p.scale;
-  const pr = r * scale * 0.8;
+  const p = project(cx, cy, cz); const pr = r * p.scale * 0.8;
   if (pr < 2) return;
-
-  const grd = ctx.createRadialGradient(p.x - pr * 0.3, p.y - pr * 0.3, pr * 0.1, p.x, p.y, pr);
-  grd.addColorStop(0, lighten(color, 60));
-  grd.addColorStop(0.5, color);
-  grd.addColorStop(1, darken(color, 40));
-  ctx.fillStyle = grd;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, pr, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
-  ctx.lineWidth = selected ? 2 : 1;
-  ctx.stroke();
+  const grd = ctx.createRadialGradient(p.x - pr*0.3, p.y - pr*0.3, pr*0.1, p.x, p.y, pr);
+  grd.addColorStop(0, lighten(color,60)); grd.addColorStop(0.5, color); grd.addColorStop(1, darken(color,40));
+  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(p.x, p.y, pr, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = selected?'#fff':'rgba(0,0,0,0.2)'; ctx.lineWidth = selected?2:1; ctx.stroke();
 }
 
 function drawCylinder(cx, cy, cz, r, h, color, selected) {
-  const top = project(cx, cy + h / 2, cz);
-  const bot = project(cx, cy - h / 2, cz);
-  const scale = top.scale;
-  const pr = r * scale * 0.8;
+  const top = project(cx, cy+h/2, cz), bot = project(cx, cy-h/2, cz);
+  const pr = r * top.scale * 0.8;
   if (pr < 2) return;
-
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(bot.x, bot.y, pr, pr * 0.3, 0, 0, Math.PI);
-  ctx.lineTo(top.x - pr, top.y);
-  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, Math.PI, 0, true);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.strokeStyle = selected ? '#fff' : 'rgba(0,0,0,0.2)';
-  ctx.lineWidth = selected ? 2 : 1;
-  ctx.beginPath();
-  ctx.ellipse(top.x, top.y, pr, pr * 0.3, 0, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.fillStyle = color; ctx.beginPath(); ctx.ellipse(top.x, top.y, pr, pr*0.3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(bot.x, bot.y, pr, pr*0.3, 0, 0, Math.PI); ctx.lineTo(top.x-pr, top.y); ctx.ellipse(top.x, top.y, pr, pr*0.3, 0, Math.PI, 0, true); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = selected?'#fff':'rgba(0,0,0,0.2)'; ctx.lineWidth = selected?2:1;
+  ctx.beginPath(); ctx.ellipse(top.x, top.y, pr, pr*0.3, 0, 0, Math.PI*2); ctx.stroke();
 }
 
 function drawSpawn(cx, cy, cz, selected) {
-  const p = project(cx, cy + 1, cz);
-  const s = p.scale * 0.4;
-  const size = Math.max(8, 16 * (s / 10));
-
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  const bot = project(cx, cy, cz);
-  ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-
-  ctx.fillStyle = '#e74c3c';
-  ctx.beginPath();
-  ctx.moveTo(p.x, p.y);
-  ctx.lineTo(p.x + size, p.y + size * 0.3);
-  ctx.lineTo(p.x, p.y + size * 0.6);
-  ctx.closePath();
-  ctx.fill();
-
-  if (selected) {
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(p.x, p.y + size * 0.3, size * 0.8, 0, Math.PI * 2); ctx.stroke();
-  }
+  const p = project(cx, cy+1, cz); const bot = project(cx, cy, cz);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+  ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x+12, p.y+4); ctx.lineTo(p.x, p.y+8); ctx.closePath(); ctx.fill();
+  if (selected) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y+4, 10, 0, Math.PI*2); ctx.stroke(); }
 }
 
 function getObjAt(px, py) {
   for (let i = gameData.objects.length - 1; i >= 0; i--) {
     const o = gameData.objects[i];
-    const cx = o.x + (o.w || 1) / 2;
-    const cy = o.y + (o.h || 1) / 2;
-    const cz = o.z + (o.d || 1) / 2;
-    const p = project(cx, cy, cz);
-    let r;
-    if (o.type === 'sphere') r = ((o.w || 1) / 2) * p.scale * 0.8;
-    else if (o.type === 'spawn') r = 16;
-    else r = Math.max((o.w || 1), (o.h || 1), (o.d || 1)) * p.scale * 0.4;
+    const p = project(o.x+(o.w||1)/2, o.y+(o.h||1)/2, o.z+(o.d||1)/2);
+    let r = o.type==='sphere' ? ((o.w||1)/2)*p.scale*0.8 : o.type==='spawn' ? 16 : Math.max(o.w||1,o.h||1,o.d||1)*p.scale*0.4;
     r = Math.max(r, 10);
-    const dx = px - p.x, dy = py - p.y;
-    if (dx * dx + dy * dy < r * r) return i;
+    if ((px-p.x)*(px-p.x)+(py-p.y)*(py-p.y) < r*r) return i;
   }
   return -1;
 }
 
-// Camera controls
+// Camera
 let orbitMode = false;
-canvas.addEventListener('mousedown', (e) => {
+canvas.addEventListener('mousedown', e => {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  dragButton = e.button;
-  lastMouse = { x: e.clientX, y: e.clientY };
-
-  if (e.button === 1 || e.button === 2 || e.shiftKey || e.altKey) {
-    isDragging = true;
-    orbitMode = true;
-    return;
-  }
-
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  dragButton = e.button; lastMouse = { x: e.clientX, y: e.clientY };
+  if (e.button === 1 || e.button === 2 || e.shiftKey || e.altKey) { isDragging = true; orbitMode = true; return; }
   if (currentTool === 'select' || currentTool === 'move') {
     const idx = getObjAt(x, y);
     if (idx >= 0) { selectedObj = idx; isDragging = true; orbitMode = false; }
     else { selectedObj = null; orbitMode = true; isDragging = true; }
-    updateProps();
-    updateObjectList();
-    render();
+    updateProps(); updateObjectList(); updateExplorer(); render();
   } else if (currentTool === 'delete') {
     const idx = getObjAt(x, y);
-    if (idx >= 0) { gameData.objects.splice(idx, 1); selectedObj = null; updateProps(); updateObjectList(); markDirty(); render(); }
+    if (idx >= 0) { gameData.objects.splice(idx, 1); selectedObj = null; updateProps(); updateObjectList(); updateExplorer(); markDirty(); render(); }
   } else {
     const ground = unproject(x, y, 0);
     if (!ground) return;
-    const snap = (v) => Math.round(v);
-    const sizes = { cube: [1, 1, 1], sphere: [1, 1, 1], cylinder: [0.8, 1.2, 0.8], floor: [4, 0.4, 4], ramp: [2, 1, 2], spawn: [0.5, 1.5, 0.5] };
-    const sz = sizes[currentTool] || [1, 1, 1];
+    const snap = v => Math.round(v);
+    const sizes = { cube:[1,1,1], sphere:[1,1,1], cylinder:[0.8,1.2,0.8], floor:[4,0.4,4], ramp:[2,1,2], spawn:[0.5,1.5,0.5] };
+    const sz = sizes[currentTool] || [1,1,1];
     const colors = ['#00a2ff','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63'];
-    const color = currentTool === 'spawn' ? '#e74c3c' : colors[gameData.objects.length % colors.length];
-    const obj = {
-      type: currentTool,
-      x: snap(ground[0] - sz[0] / 2), y: sz[1] / 2, z: snap(ground[2] - sz[2] / 2),
-      w: sz[0], h: sz[1], d: sz[2],
-      color, label: currentTool + (gameData.objects.length + 1),
-      physics: currentTool !== 'spawn'
-    };
-    gameData.objects.push(obj);
-    selectedObj = gameData.objects.length - 1;
-    logOutput('Object placed at ' + obj.x + ', ' + obj.y + ', ' + obj.z, 'info');
-    updateProps();
-    updateObjectList();
-    markDirty();
-    render();
+    const obj = { type: currentTool, x: snap(ground[0]-sz[0]/2), y: sz[1]/2, z: snap(ground[2]-sz[2]/2), w: sz[0], h: sz[1], d: sz[2], color: currentTool==='spawn'?'#e74c3c':colors[gameData.objects.length%colors.length], label: currentTool+(gameData.objects.length+1), physics: currentTool!=='spawn' };
+    gameData.objects.push(obj); selectedObj = gameData.objects.length - 1;
+    logOutput('Placed: ' + obj.label, 'success');
+    updateProps(); updateObjectList(); updateExplorer(); markDirty(); render();
   }
 });
 
-canvas.addEventListener('mousemove', (e) => {
+canvas.addEventListener('mousemove', e => {
   if (!isDragging) return;
-  const dx = e.clientX - lastMouse.x;
-  const dy = e.clientY - lastMouse.y;
+  const dx = e.clientX - lastMouse.x, dy = e.clientY - lastMouse.y;
   lastMouse = { x: e.clientX, y: e.clientY };
-
   if (orbitMode || dragButton === 1 || dragButton === 2 || e.shiftKey || e.altKey) {
-    const sensitivity = 0.01;
-    cam.theta -= dx * sensitivity;
-    cam.phi += dy * sensitivity;
-    cam.phi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cam.phi));
-    render();
-    return;
+    cam.theta -= dx * 0.01; cam.phi += dy * 0.01;
+    cam.phi = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, cam.phi));
+    render(); return;
   }
-
-  if ((currentTool === 'select' || currentTool === 'move') && selectedObj !== null) {
+  if ((currentTool==='select'||currentTool==='move') && selectedObj !== null) {
     const rect = canvas.getBoundingClientRect();
-    const ground = unproject(e.clientX - rect.left, e.clientY - rect.top, 0);
+    const ground = unproject(e.clientX-rect.left, e.clientY-rect.top, 0);
     if (ground) {
       const o = gameData.objects[selectedObj];
-      o.x = Math.round(ground[0] - (o.w || 1) / 2);
-      o.z = Math.round(ground[2] - (o.d || 1) / 2);
-      updateProps();
-      markDirty();
-      render();
+      o.x = Math.round(ground[0]-(o.w||1)/2); o.z = Math.round(ground[2]-(o.d||1)/2);
+      updateProps(); markDirty(); render();
     }
   }
 });
 
 canvas.addEventListener('mouseup', () => { isDragging = false; orbitMode = false; });
 canvas.addEventListener('mouseleave', () => { isDragging = false; orbitMode = false; });
-canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => { e.preventDefault(); cam.dist += e.deltaY*0.01; cam.dist = Math.max(3,Math.min(50,cam.dist)); render(); }, { passive: false });
 
-canvas.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  cam.dist += e.deltaY * 0.01;
-  cam.dist = Math.max(3, Math.min(50, cam.dist));
-  render();
-}, { passive: false });
-
-document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.key === 'Delete' && selectedObj !== null) {
-    deleteSelected();
-  }
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if (e.key==='Delete' && selectedObj!==null) deleteSelected();
+  if (e.key==='d' && e.ctrlKey) { e.preventDefault(); duplicateSelected(); }
+  if (e.key==='f' || e.key==='F') { cam.dist = 12; render(); }
 });
 
-// FPS Counter
-let frameCount = 0;
-let lastFpsTime = performance.now();
+// FPS
+let frameCount = 0, lastFpsTime = performance.now();
 function updateFps() {
   frameCount++;
   const now = performance.now();
   if (now - lastFpsTime >= 1000) {
     document.getElementById('fps-display').textContent = 'FPS: ' + frameCount;
-    frameCount = 0;
-    lastFpsTime = now;
+    frameCount = 0; lastFpsTime = now;
   }
   requestAnimationFrame(updateFps);
 }
@@ -791,33 +715,76 @@ updateFps();
 
 function setTool(tool) {
   currentTool = tool;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
-  canvas.style.cursor = tool === 'select' || tool === 'move' ? 'default' : 'crosshair';
+  document.querySelectorAll('.ribbon-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
   document.getElementById('tool-display').textContent = 'Tool: ' + tool.charAt(0).toUpperCase() + tool.slice(1);
 }
 
-function updateObjectList() {
-  const icons = { spawn: '&#127937;', cube: '&#128230;', sphere: '&#9898;', cylinder: '&#128309;', floor: '&#11036;', ramp: '&#128208;' };
-  const el = document.getElementById('tree-parts');
-  el.innerHTML = gameData.objects.map((o, i) =>
-    `<div class="tree-item ${selectedObj === i ? 'selected' : ''}" onclick="selectedObj=${i};updateProps();updateObjectList();render()" oncontextmenu="showContextMenu(event,${i})"><span class="icon">${icons[o.type] || '&#128230;'}</span> ${o.label}</div>`
-  ).join('');
+function switchRibbonTab(el) {
+  document.querySelectorAll('.ribbon-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const tab = el.dataset.tab;
+  ['home','model','avatar','ui','plugins'].forEach(t => {
+    const g = document.getElementById('ribbon-' + t);
+    if (g) g.style.display = t === tab ? 'flex' : 'none';
+  });
 }
+
+function switchToolboxCat(el, cat) {
+  document.querySelectorAll('.toolbox-cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  ['parts','models','scripts','recent'].forEach(c => {
+    const g = document.getElementById('toolbox-' + c);
+    if (g) g.style.display = c === cat ? 'grid' : 'none';
+  });
+}
+
+function switchRightTab(el) {
+  document.querySelectorAll('.right-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.right-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById(el.dataset.pane).classList.add('active');
+}
+
+function switchBottomTab(el) {
+  document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const pane = el.dataset.pane;
+  document.querySelectorAll('.bottom-pane').forEach(p => { p.classList.remove('active'); p.classList.remove('anim-active'); });
+  const paneEl = document.getElementById(pane);
+  paneEl.classList.add('active');
+  if (pane === 'animation-pane') { paneEl.classList.add('anim-active'); renderAnimAll(); renderAnimTracks(); }
+}
+
+function updateExplorer() {
+  const icons = { spawn:'🏁', cube:'📦', sphere:'⚽', cylinder:'🔵', floor:'🔲', ramp:'📐', house:'🏠', car:'🚗', tree:'🌳', npc:'👤', weapon:'⚔' };
+  const el = document.getElementById('explorer-tree');
+  let html = `<div class="tree-item" style="font-weight:600" onclick="selectedObj=null;updateProps();updateObjectList();updateExplorer();render()"><span class="icon">🎮</span> Workspace</div>`;
+  html += `<div style="padding-left:16px">`;
+  gameData.objects.forEach((o, i) => {
+    html += `<div class="tree-item ${selectedObj===i?'selected':''}" onclick="selectedObj=${i};updateProps();updateObjectList();updateExplorer();render()" oncontextmenu="showContextMenu(event,${i})"><span class="icon">${icons[o.type]||'📦'}</span> ${o.label}</div>`;
+  });
+  html += `</div>`;
+  html += `<div class="tree-item" style="color:#888"><span class="icon">💡</span> Lighting</div>`;
+  html += `<div class="tree-item" style="color:#888"><span class="icon">🔊</span> SoundService</div>`;
+  html += `<div class="tree-item" style="color:#888"><span class="icon">📦</span> ReplicatedStorage</div>`;
+  el.innerHTML = html;
+}
+
+function updateObjectList() { updateExplorer(); }
 
 function updateProps() {
   const panel = document.getElementById('props-panel');
   if (selectedObj === null || !gameData.objects[selectedObj]) {
-    panel.innerHTML = '<div class="props-empty">Select an object to edit</div>';
-    return;
+    panel.innerHTML = '<div class="props-empty">Select an object to edit</div>'; return;
   }
   const o = gameData.objects[selectedObj];
   panel.innerHTML = `
     <div class="prop-group">
-      <div class="prop-group-title">Name</div>
+      <div class="prop-group-title">▸ Name</div>
       <div class="prop-row"><label>Name</label><input type="text" value="${o.label}" onchange="setProp('label',this.value)"></div>
     </div>
     <div class="prop-group">
-      <div class="prop-group-title">Transform</div>
+      <div class="prop-group-title">▸ Transform</div>
       <div class="prop-row"><label>Position</label>
         <div class="prop-vec">
           <input type="number" value="${o.x}" step="0.5" onchange="setProp('x',+this.value)" placeholder="X">
@@ -841,783 +808,171 @@ function updateProps() {
       </div>
     </div>
     <div class="prop-group">
-      <div class="prop-group-title">Appearance</div>
+      <div class="prop-group-title">▸ Appearance</div>
       <div class="prop-row"><label>Color</label><input type="color" value="${o.color}" onchange="setProp('color',this.value)"></div>
-      <div class="prop-row"><label>Transparency</label><input type="range" min="0" max="1" step="0.05" value="0"></div>
       <div class="prop-row"><label>Material</label>
         <select onchange="setProp('material',this.value)">
-          <option value="plastic" ${o.material==='plastic'?'selected':''}>Plastic</option>
-          <option value="wood" ${o.material==='wood'?'selected':''}>Wood</option>
-          <option value="metal" ${o.material==='metal'?'selected':''}>Metal</option>
-          <option value="glass" ${o.material==='glass'?'selected':''}>Glass</option>
-          <option value="neon" ${o.material==='neon'?'selected':''}>Neon</option>
+          <option value="plastic">Plastic</option><option value="wood">Wood</option><option value="metal">Metal</option><option value="glass">Glass</option><option value="neon">Neon</option>
         </select>
       </div>
+      <div class="prop-row"><label>Transparency</label><input type="range" min="0" max="1" step="0.05" value="0"></div>
     </div>
     <div class="prop-group">
-      <div class="prop-group-title">Behavior</div>
+      <div class="prop-group-title">▸ Behavior</div>
       <div class="prop-row"><label>Anchored</label><input type="checkbox" checked ${o.physics!==false?'checked':''} onchange="setProp('physics',this.checked)"></div>
       <div class="prop-row"><label>CanCollide</label><input type="checkbox" checked></div>
     </div>
-    <div style="padding-top:8px">
-      <button style="width:100%;padding:6px;border:1px solid #555;border-radius:4px;background:#3c3c3c;color:#f44747;cursor:pointer;font-size:11px;font-family:inherit;font-weight:600" onclick="deleteSelected()">Delete Object</button>
-    </div>
-  `;
+    <div style="padding:6px 10px">
+      <button style="width:100%;padding:5px;border:1px solid #555;border-radius:3px;background:#3c3c3c;color:#f44747;cursor:pointer;font-size:11px;font-family:inherit" onclick="deleteSelected()">Delete</button>
+    </div>`;
 }
 
-function setProp(key, val) {
-  if (selectedObj !== null) { gameData.objects[selectedObj][key] = val; updateObjectList(); render(); markDirty(); }
-}
-
-function deleteSelected() {
-  if (selectedObj !== null) {
-    logOutput('Deleted: ' + gameData.objects[selectedObj].label, 'warn');
-    gameData.objects.splice(selectedObj, 1);
-    selectedObj = null;
-    updateProps();
-    updateObjectList();
-    markDirty();
-    render();
-  }
-}
-
-function duplicateSelected() {
-  if (selectedObj !== null) {
-    const orig = gameData.objects[selectedObj];
-    const clone = { ...orig, x: orig.x + 2, z: orig.z + 2, label: orig.label + '_copy' };
-    gameData.objects.push(clone);
-    selectedObj = gameData.objects.length - 1;
-    logOutput('Duplicated: ' + orig.label, 'info');
-    updateProps();
-    updateObjectList();
-    markDirty();
-    render();
-  }
-  hideContextMenu();
-}
-
-function renameSelected() {
-  if (selectedObj !== null) {
-    const name = prompt('Rename object:', gameData.objects[selectedObj].label);
-    if (name !== null && name.trim()) {
-      gameData.objects[selectedObj].label = name.trim();
-      updateProps();
-      updateObjectList();
-      markDirty();
-    }
-  }
-  hideContextMenu();
-}
+function setProp(key, val) { if (selectedObj!==null) { gameData.objects[selectedObj][key] = val; updateObjectList(); updateExplorer(); render(); markDirty(); } }
+function deleteSelected() { if (selectedObj!==null) { logOutput('Deleted: '+gameData.objects[selectedObj].label,'warn'); gameData.objects.splice(selectedObj,1); selectedObj=null; updateProps(); updateObjectList(); updateExplorer(); markDirty(); render(); } }
+function duplicateSelected() { if (selectedObj!==null) { const o=gameData.objects[selectedObj]; const c={...o,x:o.x+2,z:o.z+2,label:o.label+'_copy'}; gameData.objects.push(c); selectedObj=gameData.objects.length-1; logOutput('Duplicated: '+o.label,'info'); updateProps(); updateObjectList(); updateExplorer(); markDirty(); render(); } hideContextMenu(); }
+function renameSelected() { if (selectedObj!==null) { const n=prompt('Rename:',gameData.objects[selectedObj].label); if(n&&n.trim()){gameData.objects[selectedObj].label=n.trim();updateProps();updateObjectList();updateExplorer();markDirty();} } hideContextMenu(); }
 
 function insertPart(type) {
-  const sizes = { cube: [1, 1, 1], sphere: [1, 1, 1], cylinder: [0.8, 1.2, 0.8], floor: [4, 0.4, 4], ramp: [2, 1, 2], spawn: [0.5, 1.5, 0.5] };
-  const sz = sizes[type] || [1, 1, 1];
+  const sizes = { cube:[1,1,1], sphere:[1,1,1], cylinder:[0.8,1.2,0.8], floor:[4,0.4,4], ramp:[2,1,2], spawn:[0.5,1.5,0.5] };
+  const sz = sizes[type]||[1,1,1];
   const colors = ['#00a2ff','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63'];
-  const color = type === 'spawn' ? '#e74c3c' : colors[gameData.objects.length % colors.length];
-  const obj = {
-    type, x: -sz[0]/2, y: sz[1]/2, z: -sz[2]/2,
-    w: sz[0], h: sz[1], d: sz[2],
-    color, label: type + (gameData.objects.length + 1),
-    physics: type !== 'spawn'
-  };
-  gameData.objects.push(obj);
-  selectedObj = gameData.objects.length - 1;
-  logOutput('Inserted: ' + obj.label, 'success');
-  updateProps();
-  updateObjectList();
-  markDirty();
-  render();
+  const obj = { type, x:-sz[0]/2, y:sz[1]/2, z:-sz[2]/2, w:sz[0], h:sz[1], d:sz[2], color:type==='spawn'?'#e74c3c':colors[gameData.objects.length%colors.length], label:type+(gameData.objects.length+1), physics:type!=='spawn' };
+  gameData.objects.push(obj); selectedObj=gameData.objects.length-1;
+  logOutput('Inserted: '+obj.label,'success');
+  updateProps(); updateObjectList(); updateExplorer(); markDirty(); render();
 }
 
 function insertModel(type) {
   const defs = {
-    castle: { parts: [{t:'cube',x:0,y:1,z:0,w:4,h:2,d:4,c:'#999'},{t:'cube',x:-1.5,y:3,z:-1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:1.5,y:3,z:-1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:-1.5,y:3,z:1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:1.5,y:3,z:1.5,w:1,h:2,d:1,c:'#888'}], label: 'Castle' },
-    house: { parts: [{t:'cube',x:0,y:1,z:0,w:3,h:2,d:3,c:'#b5651d'},{t:'cube',x:0,y:2.5,z:0,w:3.2,h:0.5,d:3.2,c:'#8B0000'}], label: 'House' },
-    car: { parts: [{t:'cube',x:0,y:0.5,z:0,w:2,h:0.8,d:3,c:'#e74c3c'},{t:'cube',x:0,y:1.2,z:0,w:1.6,h:0.6,d:1.8,c:'#3498db'}], label: 'Car' },
-    tree: { parts: [{t:'cylinder',x:0,y:1,z:0,w:0.4,h:2,d:0.4,c:'#8B4513'},{t:'sphere',x:0,y:2.5,z:0,w:2,h:2,d:2,c:'#228B22'}], label: 'Tree' },
-    npc: { parts: [{t:'cube',x:0,y:1.5,z:0,w:0.8,h:2,d:0.5,c:'#f39c12'},{t:'sphere',x:0,y:2.8,z:0,w:0.6,h:0.6,d:0.6,c:'#f39c12'}], label: 'NPC' },
-    weapon: { parts: [{t:'cube',x:0,y:0.5,z:0,w:0.3,h:2,d:0.3,c:'#bdc3c7'},{t:'cube',x:0,y:1.5,z:0,w:1,h:0.2,d:0.2,c:'#95a5a6'}], label: 'Weapon' }
+    castle: { parts:[{t:'cube',x:0,y:1,z:0,w:4,h:2,d:4,c:'#999'},{t:'cube',x:-1.5,y:3,z:-1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:1.5,y:3,z:-1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:-1.5,y:3,z:1.5,w:1,h:2,d:1,c:'#888'},{t:'cube',x:1.5,y:3,z:1.5,w:1,h:2,d:1,c:'#888'}], label:'Castle' },
+    house: { parts:[{t:'cube',x:0,y:1,z:0,w:3,h:2,d:3,c:'#b5651d'},{t:'cube',x:0,y:2.5,z:0,w:3.2,h:0.5,d:3.2,c:'#8B0000'}], label:'House' },
+    car: { parts:[{t:'cube',x:0,y:0.5,z:0,w:2,h:0.8,d:3,c:'#e74c3c'},{t:'cube',x:0,y:1.2,z:0,w:1.6,h:0.6,d:1.8,c:'#3498db'}], label:'Car' },
+    tree: { parts:[{t:'cylinder',x:0,y:1,z:0,w:0.4,h:2,d:0.4,c:'#8B4513'},{t:'sphere',x:0,y:2.5,z:0,w:2,h:2,d:2,c:'#228B22'}], label:'Tree' },
+    npc: { parts:[{t:'cube',x:0,y:1.5,z:0,w:0.8,h:2,d:0.5,c:'#f39c12'},{t:'sphere',x:0,y:2.8,z:0,w:0.6,h:0.6,d:0.6,c:'#f39c12'}], label:'NPC' },
+    weapon: { parts:[{t:'cube',x:0,y:0.5,z:0,w:0.3,h:2,d:0.3,c:'#bdc3c7'},{t:'cube',x:0,y:1.5,z:0,w:1,h:0.2,d:0.2,c:'#95a5a6'}], label:'Weapon' }
   };
-  const def = defs[type];
-  if (!def) return;
-  def.parts.forEach(p => {
-    gameData.objects.push({
-      type: p.t, x: p.x, y: p.y, z: p.z,
-      w: p.w, h: p.h, d: p.d,
-      color: p.c, label: def.label + '_' + p.t + (gameData.objects.length + 1),
-      physics: true
-    });
-  });
-  selectedObj = gameData.objects.length - 1;
-  logOutput('Inserted model: ' + def.label, 'success');
-  updateProps();
-  updateObjectList();
-  markDirty();
-  render();
+  const def = defs[type]; if (!def) return;
+  def.parts.forEach(p => { gameData.objects.push({ type:p.t, x:p.x, y:p.y, z:p.z, w:p.w, h:p.h, d:p.d, color:p.c, label:def.label+'_'+p.t+(gameData.objects.length+1), physics:true }); });
+  selectedObj=gameData.objects.length-1;
+  logOutput('Model: '+def.label,'success');
+  updateProps(); updateObjectList(); updateExplorer(); markDirty(); render();
 }
 
 function insertScript(type) {
   const scripts = {
-    leaderboard: '-- Leaderboard Script\nlocal Players = game:GetService("Players")\nlocal function onPlayerAdded(player)\n  local leaderstats = Instance.new("Folder")\n  leaderstats.Name = "leaderstats"\n  leaderstats.Parent = player\nend\nPlayers.PlayerAdded:Connect(onPlayerAdded)',
-    killbrick: '-- Kill Brick Script\nscript.Parent.Touched:Connect(function(hit)\n  local humanoid = hit.Parent:FindFirstChild("Humanoid")\n  if humanoid then\n    humanoid.Health = 0\n  end\nend)',
-    speedpad: '-- Speed Pad Script\nscript.Parent.Touched:Connect(function(hit)\n  local humanoid = hit.Parent:FindFirstChild("Humanoid")\n  if humanoid then\n    humanoid.WalkSpeed = 32\n    wait(2)\n    humanoid.WalkSpeed = 16\n  end\nend)',
-    teleport: '-- Teleport Script\nscript.Parent.Touched:Connect(function(hit)\n  local hrp = hit.Parent:FindFirstChild("HumanoidRootPart")\n  if hrp then\n    hrp.CFrame = CFrame.new(0, 5, 0)\n  end\nend)',
-    door: '-- Door Script\nlocal open = false\nscript.Parent.Touched:Connect(function(hit)\n  if not open then\n    open = true\n    script.Parent.Transparency = 0.7\n    wait(3)\n    script.Parent.Transparency = 0\n    open = false\n  end\nend)',
-    coin: '-- Coin Pickup Script\nscript.Parent.Touched:Connect(function(hit)\n  local player = game.Players:GetPlayerFromCharacter(hit.Parent)\n  if player then\n    script.Parent:Destroy()\n  end\nend)'
+    leaderboard:'-- Leaderboard\nlocal Players = game:GetService("Players")\nPlayers.PlayerAdded:Connect(function(p)\n  local ls = Instance.new("Folder")\n  ls.Name = "leaderstats"\n  ls.Parent = p\nend)',
+    killbrick:'-- Kill Brick\nscript.Parent.Touched:Connect(function(hit)\n  local h = hit.Parent:FindFirstChild("Humanoid")\n  if h then h.Health = 0 end\nend)',
+    speedpad:'-- Speed Pad\nscript.Parent.Touched:Connect(function(hit)\n  local h = hit.Parent:FindFirstChild("Humanoid")\n  if h then h.WalkSpeed = 32\n    task.wait(2)\n    h.WalkSpeed = 16\n  end\nend)',
+    teleport:'-- Teleport\nscript.Parent.Touched:Connect(function(hit)\n  local hrp = hit.Parent:FindFirstChild("HumanoidRootPart")\n  if hrp then hrp.CFrame = CFrame.new(0,5,0) end\nend)',
+    door:'-- Door\nlocal open = false\nscript.Parent.Touched:Connect(function(hit)\n  if not open then\n    open = true\n    script.Parent.Transparency = 0.7\n    task.wait(3)\n    script.Parent.Transparency = 0\n    open = false\n  end\nend)',
+    coin:'-- Coin\nscript.Parent.Touched:Connect(function(hit)\n  local p = game.Players:GetPlayerFromCharacter(hit.Parent)\n  if p then script.Parent:Destroy() end\nend)'
   };
-  document.getElementById('script-editor').value = scripts[type] || '-- Script: ' + type;
+  document.getElementById('script-editor').value = scripts[type] || '-- ' + type;
   updateLineNumbers();
   switchBottomTab(document.querySelector('.bottom-tab[data-pane="script-pane"]'));
-  logOutput('Loaded script: ' + type, 'info');
 }
 
-function newGame() {
-  if (dirty && !confirm('Unsaved changes will be lost. Continue?')) return;
-  gameData = { objects: [], spawn: { x: 0, y: 1, z: 0 } };
-  selectedObj = null;
-  logOutput('New game created', 'info');
-  updateProps();
-  updateObjectList();
-  render();
-}
-
-// Context Menu
-function showContextMenu(e, idx) {
-  e.preventDefault();
-  selectedObj = idx;
-  updateProps();
-  updateObjectList();
-  render();
-  const menu = document.getElementById('context-menu');
-  menu.style.display = 'block';
-  menu.style.left = e.clientX + 'px';
-  menu.style.top = e.clientY + 'px';
-}
-function hideContextMenu() { document.getElementById('context-menu').style.display = 'none'; }
+function newGame() { if (dirty&&!confirm('Unsaved changes lost. Continue?')) return; gameData={objects:[],spawn:{x:0,y:1,z:0}}; selectedObj=null; updateProps(); updateObjectList(); updateExplorer(); render(); }
+function showContextMenu(e,idx) { e.preventDefault(); selectedObj=idx; updateProps(); updateObjectList(); updateExplorer(); render(); const m=document.getElementById('context-menu'); m.style.display='block'; m.style.left=e.clientX+'px'; m.style.top=e.clientY+'px'; }
+function hideContextMenu() { document.getElementById('context-menu').style.display='none'; }
 document.addEventListener('click', hideContextMenu);
 
-// Menu Dropdowns
-function toggleDropdown(id) {
-  document.querySelectorAll('.dropdown').forEach(d => {
-    if (d.id !== id) d.style.display = 'none';
-  });
-  const dd = document.getElementById(id);
-  dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
-}
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.menu-item')) {
-    document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
-  }
-});
+function toggleDropdown(id) { document.querySelectorAll('.dropdown').forEach(d => { if(d.id!==id) d.style.display='none'; }); const dd=document.getElementById(id); dd.style.display=dd.style.display==='block'?'none':'block'; }
+document.addEventListener('click', e => { if(!e.target.closest('.file-menu-item')) document.querySelectorAll('.dropdown').forEach(d => d.style.display='none'); });
 
-// Tab Switching
-function switchLeftTab(el) {
-  document.querySelectorAll('.left-panel .panel-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const panel = el.dataset.panel;
-  document.getElementById('explorer-panel').style.display = panel === 'explorer' ? 'block' : 'none';
-  document.getElementById('toolbox-panel').style.display = panel === 'toolbox' ? 'block' : 'none';
-}
+function logOutput(msg, type) { type=type||'info'; const now=new Date(); const ts=now.toLocaleTimeString('en-US',{hour12:false}); const el=document.getElementById('output-log'); el.innerHTML+=`<div class="output-line ${type}"><span class="timestamp">[${ts}]</span> ${msg}</div>`; el.scrollTop=el.scrollHeight; }
 
-function switchToolboxTab(el, gridId) {
-  el.parentElement.querySelectorAll('.toolbox-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  ['parts-grid','models-grid','scripts-grid','market-grid'].forEach(id => {
-    document.getElementById(id).style.display = id === gridId ? 'grid' : 'none';
-  });
-}
-
-function switchBottomTab(el) {
-  document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const pane = el.dataset.pane;
-  document.querySelectorAll('.bottom-pane').forEach(p => { p.classList.remove('active'); p.classList.remove('anim-active'); });
-  const paneEl = document.getElementById(pane);
-  paneEl.classList.add('active');
-  if (pane === 'animation-pane') paneEl.classList.add('anim-active');
-  if (pane === 'animation-pane') { renderAnimAll(); renderAnimTracks(); }
-}
-
-function toggleTree(id) {
-  const children = document.getElementById('tree-' + id);
-  const arrow = document.getElementById('arrow-' + id);
-  if (!children) return;
-  const visible = children.style.display !== 'none';
-  children.style.display = visible ? 'none' : 'block';
-  if (arrow) arrow.classList.toggle('open', !visible);
-}
-
-// Output Log
-function logOutput(msg, type) {
-  type = type || 'info';
-  const now = new Date();
-  const ts = now.toLocaleTimeString('en-US', { hour12: false });
-  const el = document.getElementById('output-log');
-  el.innerHTML += `<div class="output-line ${type}"><span class="timestamp">[${ts}]</span>${msg}</div>`;
-  el.scrollTop = el.scrollHeight;
-}
-
-// Script Editor Line Numbers
-function updateLineNumbers() {
-  const editor = document.getElementById('script-editor');
-  const lines = editor.value.split('\n').length;
-  const nums = document.getElementById('line-numbers');
-  nums.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
-}
+function updateLineNumbers() { const ta=document.getElementById('script-editor'); const lines=ta.value.split('\n').length; document.getElementById('line-numbers').innerHTML=Array.from({length:lines},(_,i)=>i+1).join('<br>'); }
 document.getElementById('script-editor').addEventListener('input', updateLineNumbers);
-document.getElementById('script-editor').addEventListener('scroll', function() {
-  document.getElementById('line-numbers').style.transform = 'translateY(-' + this.scrollTop + 'px)';
-});
+document.getElementById('script-editor').addEventListener('scroll', function() { document.getElementById('line-numbers').style.top = -this.scrollTop + 'px'; });
 
-// Resizable Panels
-function initResize(handleId, panelId, dir) {
-  const handle = document.getElementById(handleId);
-  const panel = document.getElementById(panelId);
-  let startX, startY, startW, startH;
-  handle.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    startX = e.clientX; startY = e.clientY;
-    startW = panel.offsetWidth; startH = panel.offsetHeight;
-    const onMove = (e) => {
-      if (dir === 'h') {
-        const dw = e.clientX - startX;
-        panel.style.width = Math.max(150, Math.min(500, startW + dw)) + 'px';
-      } else {
-        const dh = startY - e.clientY;
-        panel.style.height = Math.max(80, Math.min(400, startH + dh)) + 'px';
-      }
-      resize();
-    };
-    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-}
-initResize('left-resize', 'left-panel', 'h');
-initResize('right-resize', 'right-panel', 'h');
-
-function initBottomResize() {
-  const handle = document.getElementById('bottom-resize');
-  const panel = document.getElementById('bottom-panel');
-  const main = document.querySelector('.main-layout');
-  let startY, startH;
-  handle.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    startY = e.clientY; startH = panel.offsetHeight;
-    const onMove = (e) => {
-      const dh = startY - e.clientY;
-      const newH = Math.max(80, Math.min(400, startH + dh));
-      panel.style.height = newH + 'px';
-      main.style.height = 'calc(100vh - 32px - ' + newH + 'px - 24px)';
-      resize();
-    };
-    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-}
-initBottomResize();
-
-// Save/Load
-function markDirty() {
-  dirty = true;
-  const b = document.getElementById('save-status-bar');
-  b.innerHTML = '&#9679; Unsaved';
-  b.style.color = '#ffcc00';
-  clearTimeout(autoSaveTimer);
-  autoSaveTimer = setTimeout(autoSave, 3000);
-}
-
-async function autoSave() {
-  if (!dirty) return;
-  const b = document.getElementById('save-status-bar');
-  b.innerHTML = '&#9679; Saving...';
-  try {
-    await fetch(`/api/games/${gameId}`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: gameData, name: gameName, genre: gameGenre })
-    });
-    dirty = false;
-    b.innerHTML = '&#9679; Saved';
-    b.style.color = '#fff';
-  } catch(e) { b.innerHTML = '&#9679; Failed'; b.style.color = '#f44747'; }
-}
+function markDirty() { dirty=true; document.getElementById('save-status-bar').innerHTML='&#9679; <span style="color:#ffd700">Unsaved</span>'; clearTimeout(autoSaveTimer); autoSaveTimer=setTimeout(saveGame, 30000); }
 
 async function saveGame() {
-  const b = document.getElementById('save-status-bar');
-  b.innerHTML = '&#9679; Saving...';
+  if (!gameId) { logOutput('No game ID','error'); return; }
   try {
-    await fetch(`/api/games/${gameId}`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: gameData, name: gameName, genre: gameGenre })
-    });
-    dirty = false;
-    b.innerHTML = '&#9679; Saved';
-    b.style.color = '#fff';
-    logOutput('Game saved', 'success');
-  } catch(e) { b.innerHTML = '&#9679; Failed'; b.style.color = '#f44747'; }
+    const res = await fetch('/api/games/'+gameId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ game_data: gameData, name: gameName }) });
+    if (res.ok) { dirty=false; document.getElementById('save-status-bar').innerHTML='&#9679; Saved'; logOutput('Game saved','success'); }
+    else logOutput('Save failed','error');
+  } catch(e) { logOutput('Save error: '+e.message,'error'); }
 }
 
-function testPlay() { autoSave(); window.open(`/play.html?id=${gameId}`, '_blank'); }
-
-window.addEventListener('beforeunload', (e) => { if (dirty) { autoSave(); e.preventDefault(); e.returnValue = ''; } });
+function testPlay() { saveGame(); window.open('/play.html?id='+gameId, '_blank'); }
 
 async function loadGame() {
-  if (!gameId) { window.location.href = '/'; return; }
+  if (!gameId) { logOutput('No game ID','error'); return; }
   try {
-    const res = await fetch(`/api/games/${gameId}`);
-    const data = await res.json();
-    if (data.game) {
-      gameData = data.game.data ? JSON.parse(data.game.data) : { objects: [], spawn: { x: 0, y: 1, z: 0 } };
-      gameName = data.game.name; gameGenre = data.game.genre || 'Adventure';
-      document.title = gameName + ' - Arcadia Studio';
+    const res = await fetch('/api/games/'+gameId);
+    if (res.ok) {
+      const data = await res.json();
+      gameName = data.name || 'Untitled Game';
+      gameData = data.game_data || { objects:[], spawn:{x:0,y:1,z:0} };
       if (!gameData.objects) gameData.objects = [];
+      document.getElementById('game-name-badge').textContent = gameName;
+      document.title = gameName + ' - Arcadia Studio';
     }
-  } catch(e) {
-    logOutput('Failed to load game: ' + e.message, 'error');
-  }
-  resize();
-  updateObjectList();
-  logOutput('Game loaded: ' + gameName, 'success');
+  } catch(e) { logOutput('Load error: '+e.message,'error'); }
+  resize(); updateObjectList(); updateExplorer();
+  logOutput('Loaded: '+gameName,'success');
 }
 
-function lighten(hex, amt) {
-  const c = hexToRgb(hex);
-  return `rgb(${Math.min(255, c.r + amt)},${Math.min(255, c.g + amt)},${Math.min(255, c.b + amt)})`;
+// Resize handles
+function setupResize(handleId, panelId, dir) {
+  const handle = document.getElementById(handleId);
+  const panel = document.getElementById(panelId);
+  if (!handle || !panel) return;
+  let startX, startW;
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault(); startX = e.clientX; startW = panel.offsetWidth;
+    const onMove = e2 => { const dx = dir==='left' ? e2.clientX-startX : startX-e2.clientX; panel.style.width = Math.max(140, startW+dx)+'px'; resize(); };
+    const onUp = () => { document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); };
+    document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
+  });
 }
-function darken(hex, amt) {
-  const c = hexToRgb(hex);
-  return `rgb(${Math.max(0, c.r - amt)},${Math.max(0, c.g - amt)},${Math.max(0, c.b - amt)})`;
-}
-function hexToRgb(hex) {
-  hex = hex.replace('#', '');
-  return { r: parseInt(hex.slice(0,2),16), g: parseInt(hex.slice(2,4),16), b: parseInt(hex.slice(4,6),16) };
-}
+setupResize('left-resize','left-panel','left');
+setupResize('right-resize','right-panel','right');
+
+function lighten(hex, amt) { const c=hexToRgb(hex); return `rgb(${Math.min(255,c.r+amt)},${Math.min(255,c.g+amt)},${Math.min(255,c.b+amt)})`; }
+function darken(hex, amt) { const c=hexToRgb(hex); return `rgb(${Math.max(0,c.r-amt)},${Math.max(0,c.g-amt)},${Math.max(0,c.b-amt)})`; }
+function hexToRgb(hex) { hex=hex.replace('#',''); return {r:parseInt(hex.slice(0,2),16),g:parseInt(hex.slice(2,4),16),b:parseInt(hex.slice(4,6),16)}; }
 
 loadGame();
-logOutput('Arcadia Studio initialized', 'info');
+logOutput('Arcadia Studio v2.0 initialized','info');
 
-/* ====================== ANIMATION SYSTEM ====================== */
-const Anim = {
-  tracks: [],
-  fps: 24,
-  duration: 60,
-  currentFrame: 0,
-  playing: false,
-  loop: true,
-  selectedKeys: new Set(),
-  selectedTrack: -1,
-  dragPlayhead: false,
-  dragKeyframe: null,
-  dragKeyStartFrame: 0,
-  dragKeyStartTrack: 0,
-  keyIdCounter: 0,
-  frameWidth: 10,
-  trackHeight: 26,
-  rulerHeight: 24,
-  _animFrame: null
-};
-
-const TRACK_COLORS = ['#00a2ff','#f0c040','#4ec9b0','#f44747','#c586c0','#d7ba7d','#608b4e','#9cdcfe','#ce9178','#b5cea8'];
-const TRACK_TYPES = ['Position X','Position Y','Position Z','Rotation X','Rotation Y','Rotation Z','Scale X','Scale Y','Scale Z','Color','Opacity'];
-const TRACK_PROPS = ['position.x','position.y','position.z','rotation.x','rotation.y','rotation.z','scale.x','scale.y','scale.z','color','opacity'];
+/* ===== ANIMATION SYSTEM ===== */
+const Anim={tracks:[],fps:24,duration:60,currentFrame:0,playing:false,loop:true,selectedKeys:new Set(),selectedTrack:-1,dragPlayhead:false,dragKeyframe:null,keyIdCounter:0,frameWidth:10,trackHeight:24,rulerHeight:22,_animFrame:null};
+const TRACK_COLORS=['#00a2ff','#f0c040','#4ec9b0','#f44747','#c586c0','#d7ba7d','#608b4e','#9cdcfe','#ce9178','#b5cea8'];
+const TRACK_TYPES=['Position X','Position Y','Position Z','Rotation X','Rotation Y','Rotation Z','Scale X','Scale Y','Scale Z','Color','Opacity'];
+const TRACK_PROPS=['position.x','position.y','position.z','rotation.x','rotation.y','rotation.z','scale.x','scale.y','scale.z','color','opacity'];
 
 function animInit() {
-  addTrack('Position X', 'position.x');
-  addTrack('Position Y', 'position.y');
-  addTrack('Position Z', 'position.z');
-  addTrack('Rotation X', 'rotation.x');
-  addTrack('Rotation Y', 'rotation.y');
-  addTrack('Rotation Z', 'rotation.z');
-  renderAnimRuler();
-  renderAnimTracks();
-  renderAnimDopesheet();
-  setupAnimEvents();
+  ['Position X','Position Y','Position Z','Rotation X','Rotation Y','Rotation Z'].forEach((n,i) => Anim.tracks.push({name:n,prop:TRACK_PROPS[i],color:TRACK_COLORS[i],keyframes:[],visible:true}));
+  renderAnimRuler(); renderAnimTracks(); renderAnimDopesheet(); setupAnimEvents();
 }
-
-function addTrack(name, prop) {
-  Anim.tracks.push({
-    name: name || 'Track ' + (Anim.tracks.length + 1),
-    prop: prop || '',
-    color: TRACK_COLORS[Anim.tracks.length % TRACK_COLORS.length],
-    keyframes: [],
-    visible: true
-  });
-}
-
-function animAddTrack() {
-  const idx = Anim.tracks.length;
-  const name = TRACK_TYPES[idx % TRACK_TYPES.length] || 'Track ' + (idx + 1);
-  const prop = TRACK_PROPS[idx % TRACK_PROPS.length] || '';
-  addTrack(name, prop);
-  renderAnimTracks();
-  renderAnimDopesheet();
-}
-
-function renderAnimTracks() {
-  const el = document.getElementById('anim-track-rows');
-  if (!el) return;
-  el.innerHTML = Anim.tracks.map((t, i) => `
-    <div class="anim-track-row ${i === Anim.selectedTrack ? 'selected' : ''}" onclick="animSelectTrack(${i})">
-      <span class="t-color" style="background:${t.color}"></span>
-      <span class="t-name">${t.name}</span>
-      <span class="t-vis" onclick="event.stopPropagation();animToggleVis(${i})">${t.visible ? '👁' : '🚫'}</span>
-    </div>
-  `).join('');
-}
-
-function animSelectTrack(i) {
-  Anim.selectedTrack = i;
-  renderAnimTracks();
-}
-
-function animToggleVis(i) {
-  Anim.tracks[i].visible = !Anim.tracks[i].visible;
-  renderAnimTracks();
-  renderAnimDopesheet();
-}
-
-function renderAnimRuler() {
-  const canvas = document.getElementById('anim-ruler');
-  if (!canvas) return;
-  canvas.width = Math.max(600, Anim.duration * Anim.frameWidth + 60);
-  canvas.height = Anim.rulerHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#2a2a2a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.font = '9px Source Sans Pro, sans-serif';
-  ctx.textAlign = 'center';
-  const fw = Anim.frameWidth;
-  for (let f = 0; f <= Anim.duration; f++) {
-    const x = f * fw + 30;
-    if (f % 10 === 0) {
-      ctx.fillStyle = '#888';
-      ctx.fillRect(x, 0, 1, Anim.rulerHeight);
-      ctx.fillText(f, x, 15);
-    } else if (f % 5 === 0) {
-      ctx.fillStyle = '#555';
-      ctx.fillRect(x, 10, 1, Anim.rulerHeight - 10);
-    } else {
-      ctx.fillStyle = '#383838';
-      ctx.fillRect(x, 16, 1, Anim.rulerHeight - 16);
-    }
-  }
-}
-
-function renderAnimDopesheet() {
-  const sheet = document.getElementById('anim-dopesheet');
-  if (!sheet) return;
-  const totalW = Math.max(600, Anim.duration * Anim.frameWidth + 60);
-  sheet.style.width = totalW + 'px';
-  sheet.style.height = (Anim.tracks.length * Anim.trackHeight) + 'px';
-  sheet.innerHTML = '';
-  for (let i = 0; i < Anim.tracks.length; i++) {
-    const row = document.createElement('div');
-    row.className = 'anim-grid-row';
-    row.style.height = Anim.trackHeight + 'px';
-    if (i === Anim.selectedTrack) row.style.background = 'rgba(0,162,255,0.05)';
-    sheet.appendChild(row);
-  }
-  Anim.tracks.forEach((track, ti) => {
-    if (!track.visible) return;
-    track.keyframes.forEach(kf => {
-      const dot = document.createElement('div');
-      dot.className = 'anim-keyframe' + (Anim.selectedKeys.has(kf.id) ? ' selected' : '');
-      dot.style.left = (kf.frame * Anim.frameWidth + 30) + 'px';
-      dot.style.top = (ti * Anim.trackHeight + Anim.trackHeight / 2) + 'px';
-      dot.style.background = track.color;
-      dot.dataset.kfId = kf.id;
-      dot.addEventListener('mousedown', e => { e.stopPropagation(); animKeyMouseDown(e, kf, ti); });
-      dot.addEventListener('dblclick', e => { e.stopPropagation(); animEditKeyProps(kf, ti); });
-      sheet.appendChild(dot);
-    });
-  });
-  const ph = document.getElementById('anim-playhead');
-  if (ph) {
-    ph.style.left = (Anim.currentFrame * Anim.frameWidth + 30) + 'px';
-    ph.style.height = (Anim.tracks.length * Anim.trackHeight + Anim.rulerHeight) + 'px';
-  }
-}
-
-function renderAnimAll() {
-  renderAnimRuler();
-  renderAnimDopesheet();
-  document.getElementById('anim-frame-input').value = Anim.currentFrame;
-}
-
-function animSetupPlayheadDrag() {
-  const ruler = document.getElementById('anim-ruler');
-  const scrollArea = document.getElementById('anim-scroll-area');
-  if (!ruler) return;
-  ruler.addEventListener('mousedown', e => {
-    Anim.dragPlayhead = true;
-    animScrubPlayhead(e);
-  });
-  document.addEventListener('mousemove', e => {
-    if (Anim.dragPlayhead) animScrubPlayhead(e);
-    if (Anim.dragKeyframe) animDragKeyframeMove(e);
-  });
-  document.addEventListener('mouseup', () => {
-    Anim.dragPlayhead = false;
-    if (Anim.dragKeyframe) {
-      Anim.dragKeyframe = null;
-      renderAnimDopesheet();
-    }
-  });
-}
-
-function animScrubPlayhead(e) {
-  const scrollArea = document.getElementById('anim-scroll-area');
-  const dopesheet = document.getElementById('anim-dopesheet');
-  if (!scrollArea || !dopesheet) return;
-  const rect = scrollArea.getBoundingClientRect();
-  const scrollX = scrollArea.scrollLeft;
-  const x = e.clientX - rect.left + scrollX - 30;
-  let frame = Math.round(x / Anim.frameWidth);
-  frame = Math.max(0, Math.min(Anim.duration, frame));
-  Anim.currentFrame = frame;
-  document.getElementById('anim-frame-input').value = frame;
-  const ph = document.getElementById('anim-playhead');
-  if (ph) ph.style.left = (frame * Anim.frameWidth + 30) + 'px';
-}
-
-function animKeyMouseDown(e, kf, trackIdx) {
-  e.preventDefault();
-  if (e.shiftKey || e.ctrlKey) {
-    if (Anim.selectedKeys.has(kf.id)) Anim.selectedKeys.delete(kf.id);
-    else Anim.selectedKeys.add(kf.id);
-  } else {
-    Anim.selectedKeys.clear();
-    Anim.selectedKeys.add(kf.id);
-  }
-  Anim.dragKeyframe = kf;
-  Anim.dragKeyStartFrame = kf.frame;
-  Anim.dragKeyStartTrack = trackIdx;
-  Anim.selectedTrack = trackIdx;
-  renderAnimTracks();
-  renderAnimDopesheet();
-  animEditKeyProps(kf, trackIdx);
-}
-
-function animDragKeyframeMove(e) {
-  const kf = Anim.dragKeyframe;
-  if (!kf) return;
-  const scrollArea = document.getElementById('anim-scroll-area');
-  const rect = scrollArea.getBoundingClientRect();
-  const scrollX = scrollArea.scrollLeft;
-  const x = e.clientX - rect.left + scrollX - 30;
-  let frame = Math.round(x / Anim.frameWidth);
-  frame = Math.max(0, Math.min(Anim.duration, frame));
-  kf.frame = frame;
-  document.getElementById('anim-frame-input').value = frame;
-  Anim.currentFrame = frame;
-  const ph = document.getElementById('anim-playhead');
-  if (ph) ph.style.left = (frame * Anim.frameWidth + 30) + 'px';
-  renderAnimDopesheet();
-}
-
-function animEditKeyProps(kf, trackIdx) {
-  const el = document.getElementById('anim-props-content');
-  if (!el) return;
-  const track = Anim.tracks[trackIdx];
-  el.innerHTML = `
-    <div class="anim-prop-row"><label>Frame:</label><input type="number" value="${kf.frame}" min="0" max="${Anim.duration}" onchange="animSetKeyProp(${kf.id},'frame',+this.value)"></div>
-    <div class="anim-prop-row"><label>Value:</label><input type="number" value="${kf.value}" step="0.1" onchange="animSetKeyProp(${kf.id},'value',+this.value)"></div>
-    <div class="anim-prop-row"><label>Easing:</label>
-      <select onchange="animSetKeyProp(${kf.id},'easing',this.value)">
-        <option value="linear" ${kf.easing==='linear'?'selected':''}>Linear</option>
-        <option value="easeIn" ${kf.easing==='easeIn'?'selected':''}>Ease In</option>
-        <option value="easeOut" ${kf.easing==='easeOut'?'selected':''}>Ease Out</option>
-        <option value="easeInOut" ${kf.easing==='easeInOut'?'selected':''}>Ease In-Out</option>
-        <option value="bounce" ${kf.easing==='bounce'?'selected':''}>Bounce</option>
-        <option value="elastic" ${kf.easing==='elastic'?'selected':''}>Elastic</option>
-        <option value="step" ${kf.easing==='step'?'selected':''}>Step</option>
-      </select>
-    </div>
-    <div class="anim-prop-row"><label>Track:</label>
-      <select onchange="animMoveKeyToTrack(${kf.id},+this.value)">
-        ${Anim.tracks.map((t,i) => `<option value="${i}" ${i===trackIdx?'selected':''}>${t.name}</option>`).join('')}
-      </select>
-    </div>
-  `;
-}
-
-function animSetKeyProp(kfId, prop, val) {
-  Anim.tracks.forEach(t => {
-    const kf = t.keyframes.find(k => k.id === kfId);
-    if (kf) {
-      if (prop === 'frame') kf.frame = Math.max(0, Math.min(Anim.duration, val));
-      else kf[prop] = val;
-    }
-  });
-  renderAnimDopesheet();
-}
-
-function animMoveKeyToTrack(kfId, newTrack) {
-  let foundKf = null;
-  let oldTrack = -1;
-  Anim.tracks.forEach((t, i) => {
-    const idx = t.keyframes.findIndex(k => k.id === kfId);
-    if (idx >= 0) {
-      foundKf = t.keyframes.splice(idx, 1)[0];
-      oldTrack = i;
-    }
-  });
-  if (foundKf && oldTrack !== newTrack) {
-    Anim.tracks[newTrack].keyframes.push(foundKf);
-    Anim.selectedTrack = newTrack;
-    renderAnimTracks();
-    renderAnimDopesheet();
-    animEditKeyProps(foundKf, newTrack);
-  }
-}
-
-function animAddKeyframe() {
-  if (Anim.selectedTrack < 0 || Anim.selectedTrack >= Anim.tracks.length) return;
-  const track = Anim.tracks[Anim.selectedTrack];
-  const existing = track.keyframes.find(k => k.frame === Anim.currentFrame);
-  if (existing) {
-    Anim.selectedKeys.clear();
-    Anim.selectedKeys.add(existing.id);
-    renderAnimDopesheet();
-    animEditKeyProps(existing, Anim.selectedTrack);
-    return;
-  }
-  const kf = { id: ++Anim.keyIdCounter, frame: Anim.currentFrame, value: 0, easing: 'linear' };
-  track.keyframes.push(kf);
-  track.keyframes.sort((a, b) => a.frame - b.frame);
-  Anim.selectedKeys.clear();
-  Anim.selectedKeys.add(kf.id);
-  renderAnimDopesheet();
-  animEditKeyProps(kf, Anim.selectedTrack);
-}
-
-function animDeleteSelectedKeys() {
-  Anim.tracks.forEach(t => {
-    t.keyframes = t.keyframes.filter(k => !Anim.selectedKeys.has(k.id));
-  });
-  Anim.selectedKeys.clear();
-  renderAnimDopesheet();
-  document.getElementById('anim-props-content').innerHTML = '<span style="color:#666;font-size:10px">Select a keyframe to edit</span>';
-}
-
-function animTogglePlay() {
-  if (Anim.playing) {
-    Anim.playing = false;
-    document.getElementById('anim-btn-play').textContent = '▶ Play';
-    document.getElementById('anim-btn-play').classList.remove('active');
-    if (Anim._animFrame) cancelAnimationFrame(Anim._animFrame);
-  } else {
-    Anim.playing = true;
-    document.getElementById('anim-btn-play').textContent = '⏸ Pause';
-    document.getElementById('anim-btn-play').classList.add('active');
-    animPlayLoop();
-  }
-}
-
-function animPlayLoop() {
-  if (!Anim.playing) return;
-  Anim.currentFrame++;
-  if (Anim.currentFrame > Anim.duration) {
-    if (Anim.loop) Anim.currentFrame = 0;
-    else { Anim.playing = false; document.getElementById('anim-btn-play').textContent = '▶ Play'; return; }
-  }
-  renderAnimAll();
-  Anim._animFrame = setTimeout(() => requestAnimationFrame(animPlayLoop), 1000 / Anim.fps);
-}
-
-function animStop() {
-  Anim.playing = false;
-  Anim.currentFrame = 0;
-  document.getElementById('anim-btn-play').textContent = '▶ Play';
-  document.getElementById('anim-btn-play').classList.remove('active');
-  if (Anim._animFrame) cancelAnimationFrame(Anim._animFrame);
-  renderAnimAll();
-}
-
-function animStepBack() {
-  Anim.currentFrame = Math.max(0, Anim.currentFrame - 1);
-  renderAnimAll();
-}
-
-function animStepFwd() {
-  Anim.currentFrame = Math.min(Anim.duration, Anim.currentFrame + 1);
-  renderAnimAll();
-}
-
-function animGoToFrame(f) {
-  Anim.currentFrame = Math.max(0, Math.min(Anim.duration, f));
-  renderAnimAll();
-}
-
-function animSetFps(f) {
-  Anim.fps = Math.max(1, Math.min(120, f));
-}
-
-function animSetDuration(d) {
-  Anim.duration = Math.max(1, Math.min(3600, d));
-  renderAnimAll();
-}
-
-function animToggleLoop() {
-  Anim.loop = !Anim.loop;
-  document.getElementById('anim-btn-loop').classList.toggle('active', Anim.loop);
-}
-
-function animExportAnim() {
-  const data = { fps: Anim.fps, duration: Anim.duration, tracks: Anim.tracks.map(t => ({ name: t.name, prop: t.prop, color: t.color, keyframes: t.keyframes })) };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'animation.json'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-function animImportAnim() {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = '.json';
-  input.onchange = e => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        Anim.fps = data.fps || 24;
-        Anim.duration = data.duration || 60;
-        Anim.tracks = data.tracks || [];
-        Anim.keyIdCounter = 0;
-        Anim.tracks.forEach(t => t.keyframes.forEach(k => { if (k.id > Anim.keyIdCounter) Anim.keyIdCounter = k.id; }));
-        document.getElementById('anim-fps-input').value = Anim.fps;
-        document.getElementById('anim-dur-input').value = Anim.duration;
-        renderAnimTracks();
-        renderAnimAll();
-      } catch(err) { logOutput('Import failed: ' + err.message, 'error'); }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
-
-function setupAnimEvents() {
-  animSetupPlayheadDrag();
-  const dopesheet = document.getElementById('anim-dopesheet');
-  if (dopesheet) {
-    dopesheet.addEventListener('click', e => {
-      if (e.target === dopesheet || e.target.classList.contains('anim-grid-row')) {
-        Anim.selectedKeys.clear();
-        renderAnimDopesheet();
-        document.getElementById('anim-props-content').innerHTML = '<span style="color:#666;font-size:10px">Select a keyframe to edit</span>';
-      }
-    });
-  }
-  document.addEventListener('keydown', e => {
-    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-    if (e.key === 'Delete' || e.key === 'Backspace') animDeleteSelectedKeys();
-    if (e.key === 'ArrowLeft') { animStepBack(); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { animStepFwd(); e.preventDefault(); }
-    if (e.key === ' ') { animTogglePlay(); e.preventDefault(); }
-  });
-}
-
+function animAddTrack() { const i=Anim.tracks.length; Anim.tracks.push({name:TRACK_TYPES[i]||'Track '+(i+1),prop:TRACK_PROPS[i]||'',color:TRACK_COLORS[i%TRACK_COLORS.length],keyframes:[],visible:true}); renderAnimTracks(); renderAnimDopesheet(); }
+function renderAnimTracks() { const el=document.getElementById('anim-track-rows'); if(!el)return; el.innerHTML=Anim.tracks.map((t,i)=>`<div class="anim-track-row ${i===Anim.selectedTrack?'selected':''}" onclick="animSelectTrack(${i})"><span class="t-color" style="background:${t.color}"></span><span class="t-name">${t.name}</span></div>`).join(''); }
+function animSelectTrack(i) { Anim.selectedTrack=i; renderAnimTracks(); }
+function renderAnimRuler() { const c=document.getElementById('anim-ruler'); if(!c)return; c.width=Math.max(600,Anim.duration*Anim.frameWidth+60); c.height=Anim.rulerHeight; const ctx=c.getContext('2d'); ctx.fillStyle='#2a2d2e'; ctx.fillRect(0,0,c.width,c.height); ctx.font='9px Source Sans Pro'; ctx.textAlign='center'; const fw=Anim.frameWidth; for(let f=0;f<=Anim.duration;f++){const x=f*fw+30;if(f%10===0){ctx.fillStyle='#888';ctx.fillRect(x,0,1,Anim.rulerHeight);ctx.fillText(f,x,14);}else if(f%5===0){ctx.fillStyle='#555';ctx.fillRect(x,10,1,Anim.rulerHeight-10);}else{ctx.fillStyle='#383838';ctx.fillRect(x,16,1,Anim.rulerHeight-16);}} }
+function renderAnimDopesheet() { const s=document.getElementById('anim-dopesheet'); if(!s)return; s.style.width=Math.max(600,Anim.duration*Anim.frameWidth+60)+'px'; s.style.height=Anim.tracks.length*Anim.trackHeight+'px'; s.innerHTML=''; Anim.tracks.forEach((_,i)=>{const r=document.createElement('div');r.className='anim-grid-row';r.style.height=Anim.trackHeight+'px';if(i===Anim.selectedTrack)r.style.background='rgba(0,162,255,0.05)';s.appendChild(r);}); Anim.tracks.forEach((track,ti)=>{if(!track.visible)return; track.keyframes.forEach(kf=>{const d=document.createElement('div');d.className='anim-keyframe'+(Anim.selectedKeys.has(kf.id)?' selected':'');d.style.left=(kf.frame*Anim.frameWidth+30)+'px';d.style.top=(ti*Anim.trackHeight+Anim.trackHeight/2)+'px';d.style.background=track.color;d.dataset.kfId=kf.id;d.addEventListener('mousedown',e=>{e.stopPropagation();animKeyMouseDown(e,kf,ti);});s.appendChild(d);});}); const ph=document.getElementById('anim-playhead'); if(ph){ph.style.left=(Anim.currentFrame*Anim.frameWidth+30)+'px';ph.style.height=Anim.tracks.length*Anim.trackHeight+'px';} }
+function renderAnimAll() { renderAnimRuler(); renderAnimDopesheet(); const fi=document.getElementById('anim-frame-input'); if(fi)fi.value=Anim.currentFrame; }
+function animSetupPlayheadDrag() { const r=document.getElementById('anim-ruler'); if(!r)return; r.addEventListener('mousedown',e=>{Anim.dragPlayhead=true;animScrub(e);}); document.addEventListener('mousemove',e=>{if(Anim.dragPlayhead)animScrub(e);if(Anim.dragKeyframe)animDragKeyMove(e);}); document.addEventListener('mouseup',()=>{Anim.dragPlayhead=false;if(Anim.dragKeyframe){Anim.dragKeyframe=null;renderAnimDopesheet();}}); }
+function animScrub(e) { const sa=document.getElementById('anim-scroll-area'); if(!sa)return; const rect=sa.getBoundingClientRect(); const x=e.clientX-rect.left+sa.scrollLeft-30; let f=Math.round(x/Anim.frameWidth); f=Math.max(0,Math.min(Anim.duration,f)); Anim.currentFrame=f; const fi=document.getElementById('anim-frame-input'); if(fi)fi.value=f; const ph=document.getElementById('anim-playhead'); if(ph)ph.style.left=(f*Anim.frameWidth+30)+'px'; }
+function animKeyMouseDown(e,kf,ti) { e.preventDefault(); if(!e.shiftKey)Anim.selectedKeys.clear(); Anim.selectedKeys.add(kf.id); Anim.selectedTrack=ti; renderAnimTracks(); renderAnimDopesheet(); }
+function animDragKeyMove(e) { const kf=Anim.dragKeyframe; if(!kf)return; const sa=document.getElementById('anim-scroll-area'); const rect=sa.getBoundingClientRect(); const x=e.clientX-rect.left+sa.scrollLeft-30; let f=Math.round(x/Anim.frameWidth); f=Math.max(0,Math.min(Anim.duration,f)); kf.frame=f; Anim.currentFrame=f; const fi=document.getElementById('anim-frame-input'); if(fi)fi.value=f; const ph=document.getElementById('anim-playhead'); if(ph)ph.style.left=(f*Anim.frameWidth+30)+'px'; renderAnimDopesheet(); }
+function animAddKeyframe() { if(Anim.selectedTrack<0)return; const track=Anim.tracks[Anim.selectedTrack]; const existing=track.keyframes.find(k=>k.frame===Anim.currentFrame); if(existing){Anim.selectedKeys.clear();Anim.selectedKeys.add(existing.id);renderAnimDopesheet();return;} const kf={id:++Anim.keyIdCounter,frame:Anim.currentFrame,value:0,easing:'linear'}; track.keyframes.push(kf); track.keyframes.sort((a,b)=>a.frame-b.frame); Anim.selectedKeys.clear();Anim.selectedKeys.add(kf.id);renderAnimDopesheet(); }
+function animDeleteSelectedKeys() { Anim.tracks.forEach(t=>{t.keyframes=t.keyframes.filter(k=>!Anim.selectedKeys.has(k.id));}); Anim.selectedKeys.clear(); renderAnimDopesheet(); }
+function animTogglePlay() { if(Anim.playing){Anim.playing=false;document.getElementById('anim-btn-play').textContent='▶ Play';document.getElementById('anim-btn-play').classList.remove('active');if(Anim._animFrame)cancelAnimationFrame(Anim._animFrame);}else{Anim.playing=true;document.getElementById('anim-btn-play').textContent='⏸ Pause';document.getElementById('anim-btn-play').classList.add('active');animPlayLoop();} }
+function animPlayLoop() { if(!Anim.playing)return; Anim.currentFrame++; if(Anim.currentFrame>Anim.duration){if(Anim.loop)Anim.currentFrame=0;else{Anim.playing=false;document.getElementById('anim-btn-play').textContent='▶ Play';return;}} renderAnimAll(); Anim._animFrame=setTimeout(()=>requestAnimationFrame(animPlayLoop),1000/Anim.fps); }
+function animStop() { Anim.playing=false;Anim.currentFrame=0;document.getElementById('anim-btn-play').textContent='▶ Play';document.getElementById('anim-btn-play').classList.remove('active');if(Anim._animFrame)cancelAnimationFrame(Anim._animFrame);renderAnimAll(); }
+function animStepBack() { Anim.currentFrame=Math.max(0,Anim.currentFrame-1);renderAnimAll(); }
+function animStepFwd() { Anim.currentFrame=Math.min(Anim.duration,Anim.currentFrame+1);renderAnimAll(); }
+function animGoToFrame(f) { Anim.currentFrame=Math.max(0,Math.min(Anim.duration,f));renderAnimAll(); }
+function animSetFps(f) { Anim.fps=Math.max(1,Math.min(120,f)); }
+function animSetDuration(d) { Anim.duration=Math.max(1,Math.min(3600,d));renderAnimAll(); }
+function animToggleLoop() { Anim.loop=!Anim.loop;document.getElementById('anim-btn-loop').classList.toggle('active',Anim.loop); }
+function animExportAnim() { const d={fps:Anim.fps,duration:Anim.duration,tracks:Anim.tracks.map(t=>({name:t.name,prop:t.prop,color:t.color,keyframes:t.keyframes}))}; const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}); const u=URL.createObjectURL(b); const a=document.createElement('a');a.href=u;a.download='animation.json';a.click();URL.revokeObjectURL(u); }
+function animImportAnim() { const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=e=>{const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);Anim.fps=d.fps||24;Anim.duration=d.duration||60;Anim.tracks=d.tracks||[];document.getElementById('anim-fps-input').value=Anim.fps;document.getElementById('anim-dur-input').value=Anim.duration;renderAnimTracks();renderAnimAll();}catch(err){logOutput('Import failed: '+err.message,'error');}};r.readAsText(e.target.files[0]);};i.click(); }
+function setupAnimEvents() { animSetupPlayheadDrag(); document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='Delete')animDeleteSelectedKeys();if(e.key==='ArrowLeft'){animStepBack();e.preventDefault();}if(e.key==='ArrowRight'){animStepFwd();e.preventDefault();}if(e.key===' '&&document.activeElement===document.body){animTogglePlay();e.preventDefault();}}); }
 animInit();
 </script>
 </body>
